@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './index.scss'
 
 // import components
@@ -30,5 +30,4 @@ function App() {
     </div>
   )
 }
-
 export default App
