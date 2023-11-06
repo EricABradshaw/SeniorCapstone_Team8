@@ -1,0 +1,105 @@
+/* Color Variables */
+$primary-light: #CFCFCF;
+$text-dark: #353535;
+$primary-color-dark: #404040;
+$secondary-color-dark: #353535;
+$border-color: #AAA;
+
+/* Mixins */
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@mixin image-size {
+  height: 224px;
+  width: 224px;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: $primary-color-dark;
+  color: $primary-light;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#app-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  background-color: $secondary-color-dark;
+  outline: 4px solid $border-color;
+  padding: 1em;
+  align-items: center;
+  height: 5em;
+}
+
+#mainSection {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 50px;
+  div:not(.filler) {
+    @include flex-center;
+    @include image-size;
+    outline: 6px solid $border-color;
+    background-color: $primary-light;
+    border-radius: 5px;
+    color: $text-dark;
+  }
+  div:hover {
+    filter: brightness(60%);
+    cursor: pointer;
+    box-shadow: 0 0 10px $border-color;
+  }
+}
+
+.draggable {
+  background-color: green;
+  overflow: auto;
+  z-index: 1;
+
+  .react-resizable {
+    position: relative;
+  }
+
+  .resize-handle {
+    width: 10px;
+    height: 10px;
+    background: white;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    cursor: ns-resize;
+  }
+
+  .drag-handle {
+    background: white;
+    padding: 4px;
+    cursor: move;
+  }
+}
+
+#imageLibrary {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 30em;
+  background-color: $secondary-color-dark;
+  outline: 4px solid $border-color;
+}
