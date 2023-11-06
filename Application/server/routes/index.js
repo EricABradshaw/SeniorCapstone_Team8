@@ -4,6 +4,8 @@ const router = express.Router()
 const controller = require('../controllers/main.controller')
 
 /* GET home page. */
-router.get('/', controller.mainController.sendReactApp)
+router.route('/')
+  .get('/', controller.mainController.sendReactApp)
+  .post()
 
 module.exports = router
