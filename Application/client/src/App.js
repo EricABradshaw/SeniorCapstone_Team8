@@ -1,9 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState,useRef } from 'react'
 import './index.scss'
 
 // import components
+import Gallery from './GridGallery'
 
 function App() {
+
+  const coverImageRef = useRef(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  // Callback function to be passed to GridGallery
+  const handleImageSelect = (index, image) => {
+    // You can access the selected image data here
+    console.log('Selected Image:', image);
+    setSelectedImage(image);
+
+    // Perform modifications to the cover image using coverImageRef.current
+    // Example: coverImageRef.current.src = image.src;
+  };
+
   return (
     <div className="App">
       <div id="app-header">
@@ -14,8 +29,17 @@ function App() {
         <div id="secretImageSection">
           <h1>Secret Image</h1>
         </div>
-        <div id="coverImageSection">
+        <div id="coverImageSection" ref={coverImageRef}>
+        {selectedImage ? (
+          <img
+            src={selectedImage.src}
+            alt={selectedImage.alt || ''}
+            width={selectedImage.width}
+            height={selectedImage.height}
+          />
+        ) : (
           <h1>Cover Image</h1>
+        )}
         </div>
         <div id="stegoImageSection">
           <h1>Stego Image?</h1>
@@ -25,6 +49,9 @@ function App() {
       <div id="imageLibrary">
         <div>
           <h3>Image Library</h3>
+          <div id="imageGallery">
+            <Gallery onSelect={handleImageSelect}/>
+          </div>
         </div>
       </div>
     </div>
