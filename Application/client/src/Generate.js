@@ -3,9 +3,9 @@ import './index.scss'
 
 // import components
 
-function App() {
+function Generate() {
   return (
-    <div className="App">
+    <div className="Generate">
       <div id="app-header">
         <h1>Hello Capstone</h1>
       </div>
@@ -30,4 +30,4 @@ function App() {
     </div>
   )
 }
-export default App
+export default Generate
