@@ -68,7 +68,7 @@ class GridGallery extends React.Component {
   render() {
 
     return <Gallery images={this.state.images}
-      onSelect={this.handleImageSelect} />
+      onClick={this.handleImageSelect} />
   }
 }
 
