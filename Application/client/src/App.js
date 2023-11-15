@@ -11,12 +11,8 @@ function App() {
 
   // Callback function to be passed to GridGallery
   const handleImageSelect = (index, image) => {
-    // You can access the selected image data here
     console.log('Selected Image:', image);
     setSelectedImage(image);
-
-    // Perform modifications to the cover image using coverImageRef.current
-    // Example: coverImageRef.current.src = image.src;
   };
 
   return (
