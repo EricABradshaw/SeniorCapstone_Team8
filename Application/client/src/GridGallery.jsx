@@ -1,31 +1,64 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Gallery } from "react-grid-gallery";
 
-const images = [
-   {
-      src: "https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg",
-      width: 224,
-      height: 224,
-      caption: "After Rain (Jeshu John - designerspics.com)",
-   },
-   {
-      src: "https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg",
-      width: 224,
-      height: 224,
-      tags: [
-         { value: "Ocean", title: "Ocean" },
-         { value: "People", title: "People" },
-      ],
-      alt: "Boats (Jeshu John - designerspics.com)",
-   },
-   {
-      src: "https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg",
-      width: 224,
-      height: 224,
-   },
-];
+const NUM_IMAGES_REQUEST_FROM_API = 33;
+
+function getImages(numberOfImages) {
+  // Replace 'your_image_api_url' with the actual URL of the image API you want to use
+  const apiUrl = 'https://picsum.photos/224/224';
+
+  return new Promise((resolve, reject) => {
+    if (!Number.isInteger(numberOfImages) || numberOfImages <= 0) {
+      reject(new Error('Invalid number of images'));
+    }
+
+    // Make a request to the image API
+    const imagePromises = [];
+
+    for (let i = 0; i < numberOfImages; i++) {
+      imagePromises.push(`${apiUrl}?random=${i}`);
+    }
+
+    Promise.all(imagePromises)
+      .then(imageUrls => {
+        resolve(imageUrls);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+}
 
 class GridGallery extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      images: [],
+    };
+  }
+
+  componentDidMount() {
+     getImages(NUM_IMAGES_REQUEST_FROM_API)
+      .then(data => {
+        // Assuming data is an array of image objects with URLs
+        let image_array = []
+
+        data.forEach(element => {
+          image_array.push({
+            src: element,
+            width: 224,
+            height: 224,
+          });
+        });
+
+        this.setState({ images: image_array });
+      })
+      .catch(error => {
+        console.error(error.message);
+      });
+
+  }
+
   handleImageSelect = (index, image) => {
     // Call the onSelect prop passed from App.js
     if (this.props.onSelect) {
@@ -34,8 +67,9 @@ class GridGallery extends React.Component {
   };
 
   render() {
-    return <Gallery images={images}
-    onSelect={this.handleImageSelect} />
+
+    return <Gallery images={this.state.images}
+      onSelect={this.handleImageSelect} />
   }
 }
 

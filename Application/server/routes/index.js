@@ -5,7 +5,7 @@ const controller = require('../controllers/main.controller')
 
 /* GET home page. */
 router.route('/')
-  .get('/', controller.mainController.sendReactApp)
+  .get(controller.mainController.sendReactApp)
   .post()
 
 module.exports = router
