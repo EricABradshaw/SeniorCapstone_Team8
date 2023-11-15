@@ -4,7 +4,6 @@ import { Gallery } from "react-grid-gallery";
 const NUM_IMAGES_REQUEST_FROM_API = 33;
 
 function getImages(numberOfImages) {
-  // Replace 'your_image_api_url' with the actual URL of the image API you want to use
   const apiUrl = 'https://picsum.photos/224/224';
 
   return new Promise((resolve, reject) => {
