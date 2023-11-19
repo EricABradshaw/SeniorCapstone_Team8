@@ -284,6 +284,7 @@ def create_stego_image(index=0, coverImage=None, secretImage=None):
     # Print filename to the console so front-end knows which image to grab.
     print(outputFilename)
 
+
 # do not use pls
 def create_big_json():
     images_base64 = []
@@ -306,7 +307,6 @@ def create_big_json():
         json.dump({'images': images_base64}, json_file)
         
 
-
 if __name__ == '__main__':
     # Parse all the input args
     parser = argparse.ArgumentParser(description='Set input parameters for SteGuz model.')
@@ -326,23 +326,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # args.secretImage = "C:\\Users\\jacob\\Dropbox\\2023 Fall\\SeniorCapstone_Team8\\Application\\python\\Test Images\\Pens.png"
-    # args.coverImage = "C:\\Users\\jacob\\Dropbox\\2023 Fall\\SeniorCapstone_Team8\\Application\\python\\Test Images\\Parachute.png"
-    # create_stego_image(args.index, args.coverImage, args.secretImage)
-    batch_stego_images(index=0, coverImages=None, secretImage='C:\\Users\\jacob\\Documents\\repos\\SeniorCapstone_Team8\\Application\\python\\Test Images\\Pens.png')
-    
-    # if args.index == -1:
-    #     print('Error: no model selected.')
-    #     exit()
+    if args.index == -1:
+        print('Error: no model selected.')
+        exit()
 
-
-
-    # # Look at what CLAs were provided to determine which function to run.
-    # if args.coverImage is not None and args.secretImage is not None:
-    #     # Run the model with the parsed args
-    #     create_stego_image(args.index, args.coverImage, args.secretImage)
-    # elif args.stegoImage is not None:
-    #     extract_hidden_image(args.index, args.stegoImage)
+    # Look at what CLAs were provided to determine which function to run.
+    if args.coverImage is not None and args.secretImage is not None:
+        # Run the model with the parsed args
+        create_stego_image(args.index, args.coverImage, args.secretImage)
+    elif args.stegoImage is not None:
+        extract_hidden_image(args.index, args.stegoImage)
 
 
     
