@@ -49,6 +49,7 @@ const userController = {
 
     // command to run python script
     const command = `python ${runModelPath} ${coverImagePath} ${secretImagePath}`
+    // use --index --etc
 
     // exec - one-time execution with a callback
     // real-time output: spawn? possible option

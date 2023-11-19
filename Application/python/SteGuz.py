@@ -1046,7 +1046,7 @@ def preprocess_image(img_path):
     img = Image.open(img_path)
 
     # If the image has an alpha (transparency) channel, remove it
-    if img.mode == 'RGBA':
+    if img.mode != 'RGB':
         img = img.convert('RGB')
 
     # Resize the image
