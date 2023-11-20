@@ -70,6 +70,7 @@ class GridGallery extends React.Component {
     return <Gallery images={this.state.images}
       onClick={this.handleImageSelect} />
   }
+
 }
 
 export default GridGallery;
