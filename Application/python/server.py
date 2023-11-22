@@ -74,7 +74,11 @@ def create_stego_image():
         # Return the stego image
         return Response(response=stegoImage, mimetype='image/png')
     except Exception as e:
+<<<<<<< HEAD
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
+=======
+        return jsonify({"error": "Model could not be loaded. Details: " + str(e)}), 500
+>>>>>>> 20883a7 (initial flask implementation)
     
 if __name__ == '__main__':
     # tensorflow prepping is done when SteGuz.py is imported

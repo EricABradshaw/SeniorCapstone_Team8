@@ -11,7 +11,7 @@ While not strictly required it's probably best to uninstall any other versions o
 Install [Python 3.10.11](https://www.python.org/downloads/release/python-31011/)
 
 - Be sure to check the box that says "Add Python 3.x to PATH"
-- After installation, add `%appdata%\Python\Python3x\Scripts` to your PATH.
+- After installation, double check that `%appdata%\Python\Python3x\Scripts` is on your PATH.
 
 ## Development Setup Instructions
 
