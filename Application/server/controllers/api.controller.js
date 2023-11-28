@@ -40,7 +40,7 @@ const dataController = {
 /* Communicate with Flask server */
 const axios = require('axios')
 const FormData = require('form-data')
-const FLASK_SERVER_URL = 'http://localhost:5000'
+const FLASK_SERVER_URL = 'http://localhost:5000' // put in env
 
 // TODO : Create controller for user model
 const userController = {
@@ -61,7 +61,7 @@ const userController = {
       formData.append('index', req.body.index)
 
       // make request to flask server
-      const flaskResponse = await axios.post('${FLASK_SERVER_URL}/create_stego_image', formData, {
+      const flaskResponse = await axios.post(`${FLASK_SERVER_URL}/create_stego_image`, formData, {
         headers: {
           ...formData.getHeaders(),
         },
