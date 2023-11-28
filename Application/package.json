@@ -7,7 +7,7 @@
     "client": "cd client && npm start",
     "rebuild": "cd client && npm run build",
     "dev": "concurrently \"npm run start\" \"npm run client\"",
-    "flask": "cd python && python server.py",
+    "flask": "cd python && .venv\\Scripts\\activate && python server.py",
     "all": "concurrently \"npm run start\" \"npm run client\" \"npm run flask\""
   },
   "dependencies": {

@@ -4,10 +4,14 @@ Senior Capstone project Team 8 AY 2023-24
 
 ## Python Setup
 
-Download and Install [Python 3.11.6](https://www.python.org/downloads/release/python-3116/) if you don't already have it.
+The models were developed using an older version of TensorFlow; 1.xx compatibility has decreased in later releases and full-blown conversion to 2.xx is not within our scope, so to properly use the models we need a version of Python that is compatible with TensorFlow 2.8.0, the latest of which is Python 3.10.11.
 
-- Be sure to check the box that says "Add Python 3.11 to PATH"
-- After installation, verify that `C:\Program Files\Python311\Scripts` has been added to your PATH.
+While not strictly required it's probably best to uninstall any other versions of Python.
+
+Install [Python 3.10.11](https://www.python.org/downloads/release/python-31011/)
+
+- Be sure to check the box that says "Add Python 3.x to PATH"
+- After installation, add `%appdata%\Python\Python3x\Scripts` to your PATH.
 
 ## Development Setup Instructions
 
@@ -30,5 +34,5 @@ npm i react-scripts -E
 cd ..
 npm i -g concurrently
 npm i
-npm run rebuild
+npm run all
 ```

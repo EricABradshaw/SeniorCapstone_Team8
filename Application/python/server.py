@@ -78,4 +78,4 @@ def create_stego_image():
     
 if __name__ == '__main__':
     # tensorflow prepping is done when SteGuz.py is imported
-    app.run(Debug)
+    app.run(debug=True)
