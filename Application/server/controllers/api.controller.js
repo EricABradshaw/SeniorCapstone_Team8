@@ -44,35 +44,42 @@ const FLASK_SERVER_URL = "http://localhost:5000"; // put in env
 // TODO : Create controller for user model
 const userController = {
   // create stego image (call flask server /create_stego_image)
-  // createStegoImage: async (req, res) => {
-  //   try {
-  //     const formData = new FormData()
-  //     // prepare data for sending to flask server
-  //     formData.append('coverImage', req.files.coverImage[0].buffer, {
-  //       filename: 'coverImage.png',
-  //       contentType: 'image/png',
-  //     })
-  //     formData.append('secretImage', req.files.secretImage[0].buffer, {
-  //       filename: 'secretImage.png',
-  //       contentType: 'image/png',
-  //     })
-  //     formData.append('index', req.body.index)
-  //     // make request to flask server
-  //     const flaskResponse = await axios.post(`${FLASK_SERVER_URL}/create_stego_image`, formData, {
-  //       headers: {
-  //         ...formData.getHeaders(),
-  //       },
-  //       responseType: 'arraybuffer',
-  //     })
-  //     // send response back to front-end
-  //     res.set('Content-Type', 'image/png')
-  //     res.send(flaskResponse.data)
-  //   }
-  //   catch (error) {
-  //     console.error('Error calling Flask server:', error)
-  //     res.status(500).send('Internal Server Error')
-  //   }
-  // },
+  createStegoImage: async (req, res) => {
+    try {
+      const formData = new FormData();
+
+      // prepare data for sending to flask server
+      formData.append("coverImage", req.files.coverImage[0].buffer, {
+        filename: "coverImage.png",
+        contentType: "image/png",
+      });
+      formData.append("secretImage", req.files.secretImage[0].buffer, {
+        filename: "secretImage.png",
+        contentType: "image/png",
+      });
+      formData.append("index", req.body.index);
+
+      // make request to flask server
+      const flaskResponse = await axios.post(
+        "${FLASK_SERVER_URL}/create_stego_image",
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+          },
+          responseType: "arraybuffer",
+        }
+      );
+
+      // send response back to front-end
+      res.set("Content-Type", "image/png");
+      res.send(flaskResponse.data);
+    } catch (error) {
+      console.error("Error calling Flask server:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  },
+
   // TODO: extract hidden image
   // TODO: get image metrics
 };
