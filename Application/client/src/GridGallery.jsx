@@ -73,4 +73,4 @@ class GridGallery extends React.Component {
 
 }
 
-export default GridGallery;
+export { GridGallery };
