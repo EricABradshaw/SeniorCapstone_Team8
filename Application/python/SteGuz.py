@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import pathlib
 import random
 import pandas as pd
+import io
 
 # disabling newest version of tensorflow, since this code was written before TF2
 # import tensorflow as tf
@@ -1041,10 +1042,14 @@ def test_model():
         print("")
 
 
-def preprocess_image(img_path):
+def preprocess_image(image_data):
     # Open the image
-    img = Image.open(img_path)
+    img = Image.open(image_data)
 
+    # If input is a byte stream instead of a file path, make sure we're at the beginning
+    if isinstance(image_data, io.BytesIO):
+        image_data.seek(0)
+    
     # If the image has an alpha (transparency) channel, remove it
     if img.mode != 'RGB':
         img = img.convert('RGB')

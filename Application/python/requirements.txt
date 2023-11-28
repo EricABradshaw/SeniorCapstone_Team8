@@ -6,3 +6,4 @@ scikit-image
 Pillow
 matplotlib
 pandas
+Flask

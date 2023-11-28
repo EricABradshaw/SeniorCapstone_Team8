@@ -36,37 +36,54 @@ const dataController = {
   }
 }
 
+
+/* Communicate with Flask server */
+const axios = require('axios')
+const FormData = require('form-data')
+const FLASK_SERVER_URL = 'http://localhost:5000' // put in env
+
 // TODO : Create controller for user model
 const userController = {
-  // test running the model
-  runModel: async(req, res) => {
-    // assumptions: images sent via POST request & stored locally
-    // need to validate & save files before running the model?
-    const coverImagePath = 'path/to/cover/image.png'
-    const secretImagePath = 'path/to/hidden/image.png'
+  // create stego image (call flask server /create_stego_image)
+  // createStegoImage: async (req, res) => {
+  //   try {
+  //     const formData = new FormData()
 
-    const runModelPath = path.join(__dirname, '../../python/run_model.py'); 
+  //     // prepare data for sending to flask server
+  //     formData.append('coverImage', req.files.coverImage[0].buffer, {
+  //       filename: 'coverImage.png',
+  //       contentType: 'image/png',
+  //     })
+  //     formData.append('secretImage', req.files.secretImage[0].buffer, {
+  //       filename: 'secretImage.png',
+  //       contentType: 'image/png',
+  //     })
+  //     formData.append('index', req.body.index)
 
-    // command to run python script
-    const command = `python ${runModelPath} ${coverImagePath} ${secretImagePath}`
-    // use --index --etc
+  //     // make request to flask server
+  //     const flaskResponse = await axios.post(`${FLASK_SERVER_URL}/create_stego_image`, formData, {
+  //       headers: {
+  //         ...formData.getHeaders(),
+  //       },
+  //       responseType: 'arraybuffer',
+  //     })
 
-    // exec - one-time execution with a callback
-    // real-time output: spawn? possible option
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`)
-        return res.status(500).send('Error running model')
-      }
-      console.log(`stdout: ${stdout}`);
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-      }
-      return res.status(200).send(stdout); // or do something with the output
-    });
-  }
+  //     // send response back to front-end
+  //     res.set('Content-Type', 'image/png')
+  //     res.send(flaskResponse.data)
+  //   }
+  //   catch (error) {
+  //     console.error('Error calling Flask server:', error)
+  //     res.status(500).send('Internal Server Error')
+  //   }
 
-  // other functionalities TODO
+
+  // },
+
+  // TODO: extract hidden image
+
+
+  // TODO: get image metrics
 
 
 

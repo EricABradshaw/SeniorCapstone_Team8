@@ -247,6 +247,7 @@ def create_stego_image(index=0, coverImage=None, secretImage=None):
     Returns: the name of the file containing the created Stego Image.
     """
     
+    # Get the parent folder (/Application/)
     cwd = os.path.dirname(os.path.abspath(__file__))
     
     # Models are always found in /Application/models/
@@ -326,16 +327,21 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    test_create = True
+    if test_create:
+        args.index = 0
+        args.coverImage = "C:\\Users\\jacob\\Dropbox\\2023 Fall\\SeniorCapstone_Team8\\Application\\python\\Test Images\\Parachute.png"
+        args.secretImage = "C:\\Users\\jacob\\Dropbox\\2023 Fall\\SeniorCapstone_Team8\\Application\\python\\Test Images\\Pens.png"
+
+    # Look at what CLAs were provided to determine which function to run.
     if args.index == -1:
         print('Error: no model selected.')
         exit()
-
-    # Look at what CLAs were provided to determine which function to run.
     if args.coverImage is not None and args.secretImage is not None:
         # Run the model with the parsed args
         create_stego_image(args.index, args.coverImage, args.secretImage)
-    elif args.stegoImage is not None:
-        extract_hidden_image(args.index, args.stegoImage)
+    # elif args.stegoImage is not None:
+    #     extract_hidden_image(args.index, args.stegoImage)
 
 
     
