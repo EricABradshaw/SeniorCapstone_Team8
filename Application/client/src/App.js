@@ -12,7 +12,6 @@ function App() {
   //Callback function to decide which Elements are visible either hiding or extraction
   const handleToggle = () => {
     setComponentAVisible(!isComponentAVisible);
-    console.log("Hello from toggle in app.js")
   };
 
   return (
