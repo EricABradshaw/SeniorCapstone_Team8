@@ -177,19 +177,10 @@ def extract_hidden_image(index=0, stegoImage=None):
     
 
 def batch_stego_images(index=0, coverImages=None, secretImage=None):
-    # 1700351751_e1e15102-524b-415d-ac85-e4fec3511f43.json
     cwd = os.path.dirname(os.path.abspath(__file__))
-    
-    # Models are always found in /Application/models/
     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
-    
-    # Get a list of the full paths to each model.
     modelPaths = get_model_paths(modelsDir)
-   
-    # File outputs will always be in /Application/temp/
     outputDir = os.path.join(os.path.dirname(cwd), 'temp')
-
-    # Model to use = index selected in the ComboBox
     inputModelPath = modelPaths[index]
 
     coverImages = []

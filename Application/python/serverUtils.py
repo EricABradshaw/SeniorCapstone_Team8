@@ -3,6 +3,16 @@ import time
 import uuid
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
+from skimage.metrics import peak_signal_noise_ratio as psnr
+from skimage.metrics import structural_similarity as ssim
+
+def get_psnr(stegoImage, coverImage):
+    pass
+
+
+def get_ssim(extractedImage, secretImage):
+    pass
 
 
 def get_model_paths(directory):
@@ -26,6 +36,7 @@ def get_model_paths(directory):
 
     return model_folders
 
+
 def generate_filename():
     """
     Returns a string based on the current time and a random Universal Unique IDentifier.
@@ -33,6 +44,22 @@ def generate_filename():
     timestamp = int(time.time())
     unique_id = uuid.uuid4()
     return f'{timestamp}_{unique_id}'
+
+
+def open_image(imagePath):
+    """
+    Open the provided .png and convert it to a NumPy array.
+
+    imagePath: The file path of the image.
+
+    Returns: the opened image transformed into a NumPy array.
+    """
+    with Image.open(imagePath) as img:
+        img = img.convert('RGB')
+        img_array = np.array(img) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+            
+        return img_array
 
 
 def output_png(outputDir, filename, image, isBatch=False):

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, send_file
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -23,9 +23,72 @@ Debug = True
 
 app = Flask(__name__)
 
-@app.route('/get_image_metrics', methods=['POST'])
-def get_image_metrics():
-    pass
+@app.route('/calculate_metrics', methods=['POST'])
+def calculate_metrics():
+    if 'secretImage' not in request.files:
+        return jsonify({"error": "Secret image must be provided"}), 400
+    
+    if not request.files.getlist('coverImages[]'):
+        return jsonify({"error": "No cover images provided"}), 400
+    
+    secretImageFile = request.files['secretImage']
+    secretImage = io.BytesIO(secretImageFile.read())
+    index = request.form.get('index', type=int, default=0)
+    metrics_list = []  
+    
+    # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    modelsDir = os.path.join(os.path.dirname(cwd), 'models')
+    modelPaths = get_model_paths(modelsDir)
+    inputModelPath = modelPaths[index]
+
+    # Load the model here since the index being sent in may vary -
+    # each index corresponds to a different model.
+    try:
+        saver.restore(sess, inputModelPath)
+        tf.train.load_checkpoint(inputModelPath)
+        
+        # Preprocess the secret image
+        secretImagePreproc = preprocess_image(secretImage)
+
+        # for each provided cover image...
+        for coverImageFile in request.files.getlist('coverImage[]'):
+            coverImage = io.BytesIO(coverImageFile.read())
+            coverImagePreproc = preprocess_image(coverImage)
+            
+            # Generate the Stego Image using the loaded model
+            stegoImage = sess.run(deploy_hide_image_op,
+                                feed_dict={"input_prep:0": [secretImagePreproc], "input_hide:0": [coverImagePreproc]})
+        
+            # Clean up the image
+            stegoImage = stegoImage.squeeze()
+            stegoImage = np.clip(stegoImage, 0, 1)
+            # stegoImage = (stegoImage * 255).astype(np.uint8)
+            
+            # we've hidden the image, now get the PSNR
+            # any additional preprocessing we need to do?
+            psnr = get_psnr(stegoImage, coverImagePreproc)
+            metrics_list.append(psnr)
+            
+            # extract the image -> get SSIM
+            
+            # Extract the Hidden Image using the loaded model
+            extractedImage = sess.run(deploy_reveal_image_op,
+                                    feed_dict={"deploy_covered:0": stegoImage})
+            
+            # Clean up the image
+            extractedImage = np.clip(extractedImage, 0, 1)
+                    
+            # we've extracted the image, now get the SSIM
+            # any additional preprocessing we need to do?
+            ssim = get_ssim(extractedImage, secretImage)
+            metrics_list.append(ssim)
+            
+        # Return the metrics list
+        return jsonify(metrics_list)
+    except Exception as e:
+        return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
+
 
 @app.route('/extract_hidden_image', methods=['POST'])
 def extract_hidden_image():
@@ -68,6 +131,7 @@ def extract_hidden_image():
         return Response(response=extractedImage, mimetype='image/png')
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
+
 
 @app.route('/create_stego_image', methods=['POST'])
 def create_stego_image():
