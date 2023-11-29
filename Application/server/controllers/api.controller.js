@@ -41,7 +41,6 @@ const dataController = {
 const axios = require('axios')
 const FormData = require('form-data')
 const FLASK_SERVER_URL = 'http://localhost:5000' // put in env
-const FLASK_SERVER_URL = 'http://localhost:5000' // put in env
 
 // TODO : Create controller for user model
 const userController = {
