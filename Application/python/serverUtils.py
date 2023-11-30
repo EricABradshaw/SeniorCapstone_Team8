@@ -8,11 +8,11 @@ from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
 
 def get_psnr(stegoImage, coverImage):
-    pass
+    return psnr(coverImage, stegoImage.squeeze())
 
 
 def get_ssim(extractedImage, secretImage):
-    pass
+    return ssim(secretImage, extractedImage.squeeze(), multichannel=True)
 
 
 def get_model_paths(directory):

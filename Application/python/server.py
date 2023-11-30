@@ -34,7 +34,6 @@ def calculate_metrics():
     secretImageFile = request.files['secretImage']
     secretImage = io.BytesIO(secretImageFile.read())
     index = request.form.get('index', type=int, default=0)
-    metrics_list = []  
     
     # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
     cwd = os.path.dirname(os.path.abspath(__file__))
@@ -44,6 +43,7 @@ def calculate_metrics():
 
     # Load the model here since the index being sent in may vary -
     # each index corresponds to a different model.
+    metrics_list = []  
     try:
         saver.restore(sess, inputModelPath)
         tf.train.load_checkpoint(inputModelPath)
@@ -53,6 +53,8 @@ def calculate_metrics():
 
         # for each provided cover image...
         for coverImageFile in request.files.getlist('coverImage[]'):
+            metrics = []
+            
             coverImage = io.BytesIO(coverImageFile.read())
             coverImagePreproc = preprocess_image(coverImage)
             
@@ -68,7 +70,7 @@ def calculate_metrics():
             # we've hidden the image, now get the PSNR
             # any additional preprocessing we need to do?
             psnr = get_psnr(stegoImage, coverImagePreproc)
-            metrics_list.append(psnr)
+            metrics.append(psnr)
             
             # extract the image -> get SSIM
             
@@ -82,7 +84,9 @@ def calculate_metrics():
             # we've extracted the image, now get the SSIM
             # any additional preprocessing we need to do?
             ssim = get_ssim(extractedImage, secretImage)
-            metrics_list.append(ssim)
+            metrics.append(ssim)
+            
+            metrics_list.append(metrics)
             
         # Return the metrics list
         return jsonify(metrics_list)
@@ -179,7 +183,8 @@ def create_stego_image():
         return Response(response=stegoImage, mimetype='image/png')
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
-    
+
+
 if __name__ == '__main__':
     # tensorflow prepping is done when SteGuz.py is imported
-    app.run(debug=True)
+    app.run(debug=Debug)
