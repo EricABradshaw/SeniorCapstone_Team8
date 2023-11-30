@@ -1,11 +1,15 @@
 const express = require('express')
+const multer = require('multer');
+
 /* Communication from Node -> Flask */
 
 /* end */
-const controller = require('../controllers/api.controller')
-const router = express.Router()
 
 const controller = require('../controllers/api.controller')
+const router = express.Router()
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 /* Everything here is prepended with /api for the route
       for example: /hide is the route .../api/hide */
 
@@ -13,8 +17,14 @@ const controller = require('../controllers/api.controller')
 router.post('/hide', controller.sendRequestsController.hideSend)
 
 // /api/extract POST: receive image from body, if not png, convert to png, send png to Flask server
-router.post('/extract', (req, res) => {
+router.post('/extract', upload.single('stegoImage'), async (req, res) => {
+  // Access the uploaded file using req.file.buffer
+  const stegoImageData = req.file.buffer.toString('base64');
+  let answer = await controller.sendRequestsController.extractSend(stegoImageData)
+  console.log('Status from Flask: ' + answer)
 
-})
+  // Send a response
+  res.json({ stegoImageData });
+});
 
 module.exports = router
