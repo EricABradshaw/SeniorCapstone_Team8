@@ -1,4 +1,8 @@
 const express = require('express')
+/* Communication from Node -> Flask */
+
+/* end */
+const controller = require('../controllers/api.controller')
 const router = express.Router()
 
 const controller = require('../controllers/api.controller')
