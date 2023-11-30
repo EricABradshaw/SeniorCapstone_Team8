@@ -1,21 +1,23 @@
 import React from 'react';
 import { Gallery } from "react-grid-gallery";
+import axios from 'axios'
 
-const NUM_IMAGES_REQUEST_FROM_API = 33;
+const NUM_IMAGES_REQUEST_FROM_API = 20;
 
-function getImages(numberOfImages) {
+async function getImages(numberOfImages) {
   const apiUrl = 'https://picsum.photos/224/224';
-
-  return new Promise((resolve, reject) => {
+  return new Promise( async (resolve, reject) => {
     if (!Number.isInteger(numberOfImages) || numberOfImages <= 0) {
-      reject(new Error('Invalid number of images'));
+      return Promise.reject(new Error('Invalid number of images'));
     }
-
     // Make a request to the image API
     const imagePromises = [];
+  
+    const response = await axios.get(`${apiUrl}`)
+    const imageId = parseInt(response.headers['picsum-id'])
 
     for (let i = 0; i < numberOfImages; i++) {
-      imagePromises.push(`${apiUrl}?random=${i}`);
+      imagePromises.push(imageId + i);
     }
 
     Promise.all(imagePromises)
@@ -37,14 +39,16 @@ class GridGallery extends React.Component {
   }
 
   componentDidMount() {
+    console.log('Component mounted')
      getImages(NUM_IMAGES_REQUEST_FROM_API)
       .then(data => {
         // Assuming data is an array of image objects with URLs
         let image_array = []
 
         data.forEach(element => {
+          let source = `https://picsum.photos/id/${element}/224`
           image_array.push({
-            src: element,
+            src: source,
             width: 224,
             height: 224,
           });

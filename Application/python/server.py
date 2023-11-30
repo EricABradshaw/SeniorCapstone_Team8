@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, Response
+from flask_cors import CORS
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -22,7 +23,30 @@ if not verbose:
 Debug = True
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 
+@app.route('/test', methods=['POST'])
+def test():
+  try:
+    print("Flask request received")
+    if 'coverImage' in request.files and 'secretImage' in request.files:
+      cover_image = request.files['coverImage']
+      secret_image = request.files['secretImage']
+      print(f"Received cover image: {cover_image.filename}, type: {cover_image.content_type}")
+      print(f"Received secret image: {secret_image.filename}, type: {secret_image.content_type}")
+      
+      coverImage = Image.open(io.BytesIO(cover_image.read()))
+      secretImage = Image.open(io.BytesIO(secret_image.read()))
+      coverImage.show()
+      secretImage.show()
+      
+      return 'Images received successfully!', 200
+    else:
+      return 'Cover and Secret not send successfully', 400
+  except Exception as e:
+    print(f"Error: {str(e)}")
+    return 'Error!', 500
+      
 @app.route('/create_stego_image', methods=['POST'])
 def create_stego_image():
     if 'coverImage' not in request.files or 'secretImage' not in request.files:
@@ -78,4 +102,6 @@ def create_stego_image():
     
 if __name__ == '__main__':
     # tensorflow prepping is done when SteGuz.py is imported
-    app.run(debug=True)
+    PORT = 5000
+    print(f"Flask server running on port {PORT}")
+    app.run(debug=True,port=PORT)
