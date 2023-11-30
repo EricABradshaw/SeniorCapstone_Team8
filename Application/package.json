@@ -11,8 +11,10 @@
     "all": "concurrently \"npm run start\" \"npm run client\" \"npm run flask\""
   },
   "dependencies": {
+    "axios": "^1.6.2",
     "body-parser": "1.20.2",
     "bootstrap": "^5.3.2",
+    "concurrently": "^8.2.2",
     "cookie-parser": "~1.4.4",
     "cors": "2.8.5",
     "debug": "~2.6.9",
