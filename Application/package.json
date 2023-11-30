@@ -11,6 +11,7 @@
     "all": "concurrently \"npm run start\" \"npm run client\" \"npm run flask\""
   },
   "dependencies": {
+    "axios": "^1.6.2",
     "body-parser": "1.20.2",
     "bootstrap": "^5.3.2",
     "cookie-parser": "~1.4.4",
@@ -24,6 +25,7 @@
     "mongoose": "8.0.0",
     "morgan": "~1.9.1",
     "react": "18.2.0",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "sharp": "^0.33.0"
   }
 }
