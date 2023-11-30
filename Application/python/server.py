@@ -183,7 +183,8 @@ def create_stego_image():
         return Response(response=stegoImage, mimetype='image/png')
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
-    
+
+
 if __name__ == '__main__':
     # tensorflow prepping is done when SteGuz.py is imported
     app.run(debug=Debug)
