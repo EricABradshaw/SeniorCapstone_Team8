@@ -40,7 +40,7 @@ def create_stego_image():
     return 'Images received!', 200
   except Exception as e:
     print(f"Error: {str(e)}")
-    return 'Error!', 500
+    return 'Error!', 500 
 
 
 @app.route('/calculate_metrics', methods=['POST'])
