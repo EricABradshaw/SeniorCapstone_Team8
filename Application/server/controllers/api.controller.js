@@ -17,9 +17,23 @@ const sendRequestsController = {
     } catch (err) {
       console.log(err)
     }
-   
+  },
+  extractSend: async (base64) => {
+    try {
+      const form = new FormData()
+      form.append('stegoImage', base64)
+      const response = await axios.post(FLASK_SERVER_URL + '/extract_hidden_image', form, {
+        headers: {
+          ...form.getHeaders()
+        }
+      })
+      return response.status
+    } catch (error) {
+      console.log('Error: ' + error)
+    }
   }
 }
+
 
 const helperFunctions = {
   // Takes two image URLs and fetches the images
@@ -34,7 +48,6 @@ const helperFunctions = {
       pngStrings.secretString = await (await sharp(axiosResponseSecret.data).toFormat('png').toBuffer()).toString('base64')
       console.log(pngStrings.coverString.slice(85, 105))
       console.log(pngStrings.secretString.slice(85, 105))
-
     } catch (error) {
       console.error('Error:', error)
     }
@@ -52,8 +65,9 @@ const helperFunctions = {
     } catch (err) {
       console.error(err)
     }
-    
+
   }
+
 }
 
 // TODO : Create controller for user model
@@ -105,5 +119,6 @@ const userController = {
 
 module.exports = {
   sendRequestsController,
-  userController
+  userController,
+  helperFunctions
 }
