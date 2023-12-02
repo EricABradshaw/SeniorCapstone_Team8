@@ -3,6 +3,18 @@ import time
 import uuid
 import numpy as np
 import matplotlib.pyplot as plt
+import base64
+import io 
+from PIL import Image
+from skimage.metrics import peak_signal_noise_ratio as psnr
+from skimage.metrics import structural_similarity as ssim
+
+def get_psnr(stegoImage, coverImage):
+    return psnr(coverImage, stegoImage.squeeze())
+
+
+def get_ssim(extractedImage, secretImage):
+    return ssim(secretImage, extractedImage.squeeze(), multichannel=True)
 
 
 def get_model_paths(directory):
@@ -26,6 +38,7 @@ def get_model_paths(directory):
 
     return model_folders
 
+
 def generate_filename():
     """
     Returns a string based on the current time and a random Universal Unique IDentifier.
@@ -33,6 +46,22 @@ def generate_filename():
     timestamp = int(time.time())
     unique_id = uuid.uuid4()
     return f'{timestamp}_{unique_id}'
+
+
+def open_image(imagePath):
+    """
+    Open the provided .png and convert it to a NumPy array.
+
+    imagePath: The file path of the image.
+
+    Returns: the opened image transformed into a NumPy array.
+    """
+    with Image.open(imagePath) as img:
+        img = img.convert('RGB')
+        img_array = np.array(img) / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+            
+        return img_array
 
 
 def output_png(outputDir, filename, image, isBatch=False):
@@ -45,3 +74,16 @@ def output_png(outputDir, filename, image, isBatch=False):
     image = (image * 255).astype(np.uint8) # do this in single stego image creation only?
     #plt.imsave(os.path.join(outputDir, filename), np.reshape(image.squeeze(), (224, 224, 3)))
     plt.imsave(os.path.join(outputDir, filename), image)
+    
+    
+def base64_to_image(base64String):
+    """
+    Decodes a base64 string into as a NumPy array.
+    
+    base64String: a Stego Image encoded as a base64 string.
+    
+    Returns: the decoded string as a NumPy array.
+    """
+    imgData = base64.b64decode(base64String)
+    image = Image.open(io.BytesIO(imgData))
+    return np.array(image)

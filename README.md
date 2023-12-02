@@ -15,13 +15,22 @@ Install [Python 3.10.11](https://www.python.org/downloads/release/python-31011/)
 
 ## Development Setup Instructions
 
-The following instructions assume you are using Bash or an equivalent shell within VS Code.
-
 ```
 git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
 cd SeniorCapstone_Team8/Application/python
 py -3 -m venv .venv
+```
+
+If you are using Bash or an equivalent shell:
+
+```
 . .venv/Scripts/activate
+```
+
+If you are using command prompt or PowerShell:
+
+```
+.venv\Scripts\activate
 ```
 
 In VS Code, open the command palette (Ctrl+Shift+P) and type "Python: select interpreter...". Set it to the python.exe found in your .venv folder.
