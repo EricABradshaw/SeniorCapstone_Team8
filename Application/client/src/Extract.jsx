@@ -7,12 +7,12 @@ const Extract = () => {
       <div id="mainSection">
         <div className="filler"></div>
         <div className="filler"></div>
-        <div id="secretImageSection">
-          <h1>Secret Image</h1>
+        <div id="stegoImageSection">
+          <h1>Stego Image</h1>
         </div>
         <img src='/images/arrow.svg' height={200} width={200} alt='Arrow Sign'></img>
-        <div id="coverImageSection">
-          <h1>Cover Image</h1>
+        <div id="secretImageSection">
+          <h1>Secret Image</h1>
         </div>
         <div className="filler"></div>
         <div className="filler"></div>

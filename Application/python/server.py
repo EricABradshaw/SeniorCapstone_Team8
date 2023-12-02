@@ -25,21 +25,6 @@ Debug = True
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 
-@app.route('/create_stego_image', methods=['POST'])
-def create_stego_image():
-  try:
-    print("Flask request received")
-    cover_image_string = request.json.get('coverString', '')
-    secret_image_string = request.json.get('secretString', '')
-    
-    cover_image = base64_to_image(cover_image_string)
-    secret_image = base64_to_image(secret_image_string)
-    
-    return 'Images received!', 200
-  except Exception as e:
-    print(f"Error: {str(e)}")
-    return 'Error!', 500
-
 
 @app.route('/calculate_metrics', methods=['POST'])
 def calculate_metrics():
@@ -159,6 +144,63 @@ def extract_hidden_image():
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
 
+
+@app.route('/create_stego_image', methods=['POST'])
+def create_stego_image():
+    if 'coverImage' not in request.files or 'secretImage' not in request.files:
+        return jsonify({"error": "Both cover and secret images must be provided"}), 400
+    
+    if Debug:
+        print("Flask request received")
+        print(f"Received cover image: {coverImage.filename}, type: {coverImage.content_type}")
+        print(f"Received secret image: {secretImage.filename}, type: {secretImage.content_type}")
+    
+    coverImageFile = request.files['coverImage']
+    secretImageFile = request.files['secretImage']
+    index = request.form.get('index', type=int, default=0)
+    
+    coverImageString = io.BytesIO(coverImageFile.read())
+    secretImageString = io.BytesIO(secretImageFile.read())
+    #coverImage.show()
+    #secretImage.show()
+    
+    coverImage = base64_to_image(coverImageString)
+    secretImage = base64_to_image(secretImageString)
+    
+    
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    modelsDir = os.path.join(os.path.dirname(cwd), 'models')
+    modelPaths = get_model_paths(modelsDir)
+    inputModelPath = modelPaths[index]
+
+    # Load the model here since the index being sent in may vary -
+    # each index corresponds to a different model.
+    try:
+        saver.restore(sess, inputModelPath)
+        tf.train.load_checkpoint(inputModelPath)
+        
+        # Preprocess the images
+        coverImagePreproc = preprocess_image(coverImage)
+        secretImagePreproc = preprocess_image(secretImage)
+
+        # Generate the Stego Image using the loaded model
+        stegoImage = sess.run(deploy_hide_image_op,
+                            feed_dict={"input_prep:0": [secretImagePreproc], "input_hide:0": [coverImagePreproc]})
+        
+        # Clean up the image so it's a proper PNG
+        stegoImage = stegoImage.squeeze()
+        stegoImage = np.clip(stegoImage, 0, 1)
+        stegoImage = (stegoImage * 255).astype(np.uint8)
+        
+        # Now convert it into a byte stream
+        stegoImageByteArray = io.BytesIO()
+        Image.fromarray(stegoImage).save(stegoImageByteArray, format='PNG')
+        stegoImageByteArray = stegoImageByteArray.getvalue()
+        
+        # Return the stego image
+        return Response(response=stegoImage, mimetype='image/png')
+    except Exception as e:
+        return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
       
 if __name__ == '__main__':
     # tensorflow prepping is done when SteGuz.py is imported
