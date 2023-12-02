@@ -25,25 +25,17 @@ Debug = True
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 
-
-@app.route('/test', methods=['POST'])
-def test():
+@app.route('/create_stego_image', methods=['POST'])
+def create_stego_image():
   try:
     print("Flask request received")
-    if 'coverImage' in request.files and 'secretImage' in request.files:
-      cover_image = request.files['coverImage']
-      secret_image = request.files['secretImage']
-      print(f"Received cover image: {cover_image.filename}, type: {cover_image.content_type}")
-      print(f"Received secret image: {secret_image.filename}, type: {secret_image.content_type}")
-      
-      coverImage = Image.open(io.BytesIO(cover_image.read()))
-      secretImage = Image.open(io.BytesIO(secret_image.read()))
-      coverImage.show()
-      secretImage.show()
-      
-      return 'Images received successfully!', 200
-    else:
-      return 'Cover and Secret not send successfully', 400
+    cover_image_string = request.json.get('coverString', '')
+    secret_image_string = request.json.get('secretString', '')
+    
+    cover_image = base64_to_image(cover_image_string)
+    secret_image = base64_to_image(secret_image_string)
+    
+    return 'Images received!', 200
   except Exception as e:
     print(f"Error: {str(e)}")
     return 'Error!', 500

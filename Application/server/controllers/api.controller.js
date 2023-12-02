@@ -11,8 +11,8 @@ const sendRequestsController = {
       const coverImageSource = req.body.coverImageData
       const secretImageSource = req.body.secretImageData
       console.log(`Request received from ${req.get('origin')}`)
-      let bufferPair = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
-      helperFunctions.sendToFlask(bufferPair)
+      let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
+      helperFunctions.sendToFlask(base64Strings)
       res.send('Response')
     } catch (err) {
       console.log(err)
@@ -26,29 +26,29 @@ const helperFunctions = {
   // then converts each image to a png
   // returns an object { coverBuffer: ..., secretBuffer: ... }
   fetchAndConvert: async (coverImageUrl, secretImageUrl) => {
-    let pngBuffers = {}
+    let pngStrings = {}
     try {
       const axiosResponseCover = await axios.get(coverImageUrl, {responseType: 'arraybuffer'})
       const axiosResponseSecret = await axios.get(secretImageUrl, {responseType: 'arraybuffer'})
-      pngBuffers.coverBuffer = await sharp(axiosResponseCover.data).toFormat('png').toBuffer()
-      pngBuffers.secretBuffer = await sharp(axiosResponseSecret.data).toFormat('png').toBuffer()
+      pngStrings.coverString = await (await sharp(axiosResponseCover.data).toFormat('png').toBuffer()).toString('base64')
+      pngStrings.secretString = await (await sharp(axiosResponseSecret.data).toFormat('png').toBuffer()).toString('base64')
+      console.log(pngStrings.coverString.slice(85, 105))
+      console.log(pngStrings.secretString.slice(85, 105))
+
     } catch (error) {
       console.error('Error:', error)
     }
-    return pngBuffers
+    return pngStrings
   },
   // Sends the object containing two png buffers to Flask server
   sendToFlask: async (data) => {
     try {
-      const form = new FormData()
-      form.append('coverImage', data.coverBuffer, { filename: 'cover.png', contentType: 'image/png' })
-      form.append('secretImage', data.secretBuffer, { filename: 'secret.png', contentType: 'image/png' })
-      const response = await axios.post(FLASK_SERVER_URL + '/test'/*'/create_stego_image'*/, form, {
+      const response = await axios.post(FLASK_SERVER_URL + '/create_stego_image', data, {
         headers: {
-          ...form.getHeaders()
+          'Content-Type': 'application/json'
         }
       })
-      console.log("From Flask: " + response.status)
+      console.log("From Flask: " + response.status + response.message)
     } catch (err) {
       console.error(err)
     }
