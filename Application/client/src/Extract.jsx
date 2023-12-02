@@ -10,7 +10,7 @@ const Extract = () => {
         <div id="secretImageSection">
           <h1>Secret Image</h1>
         </div>
-        <img src='./images/arrow.svg' height={200} width={200} alt='Plus Sign'></img>
+        <img src='/images/arrow.svg' height={200} width={200} alt='Arrow Sign'></img>
         <div id="coverImageSection">
           <h1>Cover Image</h1>
         </div>
