@@ -20,7 +20,7 @@ const Hide = () => {
     setCoverImageData(image.src)
   };
 
-  const handleSecretImageSelect = (image) =>{
+  const handleSecretImageSelect = (image) => {
     console.log('Secret Image:', image);
     setSecretImage(image);
     setSecretImageData(image.src)
@@ -57,7 +57,7 @@ const Hide = () => {
       <div id="mainSection">
         <div className="filler"></div>
         <div id="secretImageSection" onClick={() => handleItemClick("secretImage")}>
-        {secretImage ? (
+          {secretImage ? (
             <img
               ref={secretImageRef}
               src={secretImage.src}
@@ -94,9 +94,9 @@ const Hide = () => {
           {processing ? 'Processing...' : 'Hide!'}
         </button>
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} selectedItem={selectedItem} handleCoverImageSelect={handleCoverImageSelect} handleSecretImageSelect={handleSecretImageSelect}/>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} selectedItem={selectedItem} handleCoverImageSelect={handleCoverImageSelect} handleSecretImageSelect={handleSecretImageSelect} />
     </div>
-  );  
+  );
 }
 
 export default Hide;

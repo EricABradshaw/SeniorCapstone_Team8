@@ -1,6 +1,31 @@
 import React from 'react'
 import { GridGallery } from './GridGallery';
 
+const handleUploadClick = async () => {
+  try {
+    const selectedFile = await selectFile();
+    if (selectedFile) {
+      // setStegoImage(selectedFile);
+    }
+  } catch (error) {
+    console.error('Error selecting file:', error);
+  }
+};
+
+const selectFile = () => {
+  return new Promise((resolve) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.addEventListener('change', (event) => {
+      const selectedFile = event.target.files[0];
+      resolve(selectedFile);
+    });
+    input.click();
+  });
+};
+
 const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleCoverImageSelect }) => {
 
   // Callback function to be passed to GridGallery
@@ -21,6 +46,7 @@ const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleC
           <GridGallery onSelect={handleImageSelect} />
         </div>
         <button onClick={onClose}>Close</button>
+        <button onClick={handleUploadClick}>Upload your own</button>
       </div>
     </div>
   );

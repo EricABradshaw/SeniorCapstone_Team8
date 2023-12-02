@@ -25,6 +25,48 @@ Debug = True
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 
+@app.route('/extract_hidden_image', methods=['POST'])
+def extract_hidden_image():
+    if 'stegoImage' not in request.files:
+        return jsonify({"error": "Stego image must be provided"}), 400
+
+    stegoImageFile = request.files['stegoImage']
+    index = request.form.get('index', type=int, default=0)
+    
+    stegoImage = io.BytesIO(stegoImageFile.read())
+    
+    # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    modelsDir = os.path.join(os.path.dirname(cwd), 'models')
+    modelPaths = get_model_paths(modelsDir)
+    inputModelPath = modelPaths[index]
+
+    # Load the model here since the index being sent in may vary -
+    # each index corresponds to a different model.
+    try:
+        saver.restore(sess, inputModelPath)
+        tf.train.load_checkpoint(inputModelPath)
+        
+        # Open the Stego Image
+        stegoImage = open_image(stegoImage)
+
+        # Extract the Hidden Image using the loaded model
+        extractedImage = sess.run(deploy_reveal_image_op,
+                                feed_dict={"deploy_covered:0": stegoImage})
+        
+        # Limit the values to between 0 and 1
+        extractedImage = np.clip(extractedImage, 0, 1)
+                
+        # Now convert it into a byte stream
+        extractedImageByteArray = io.BytesIO()
+        Image.fromarray(extractedImage).save(extractedImageByteArray, format='PNG')
+        extractedImageByteArray = extractedImageByteArray.getvalue()
+        
+        # Return the extracted image
+        return Response(response=extractedImage, mimetype='image/png')
+    except Exception as e:
+        return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
+
 @app.route('/create_stego_image', methods=['POST'])
 def create_stego_image():
   try:
