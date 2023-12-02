@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, Response, send_file
+from flask_cors import CORS
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -22,6 +23,30 @@ if not verbose:
 Debug = True
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
+
+@app.route('/test', methods=['POST'])
+def test():
+  try:
+    print("Flask request received")
+    if 'coverImage' in request.files and 'secretImage' in request.files:
+      cover_image = request.files['coverImage']
+      secret_image = request.files['secretImage']
+      print(f"Received cover image: {cover_image.filename}, type: {cover_image.content_type}")
+      print(f"Received secret image: {secret_image.filename}, type: {secret_image.content_type}")
+      
+      coverImage = Image.open(io.BytesIO(cover_image.read()))
+      secretImage = Image.open(io.BytesIO(secret_image.read()))
+      coverImage.show()
+      secretImage.show()
+      
+      return 'Images received successfully!', 200
+    else:
+      return 'Cover and Secret not send successfully', 400
+  except Exception as e:
+    print(f"Error: {str(e)}")
+    return 'Error!', 500
+
 
 @app.route('/calculate_metrics', methods=['POST'])
 def calculate_metrics():
@@ -32,8 +57,10 @@ def calculate_metrics():
         return jsonify({"error": "No cover images provided"}), 400
     
     secretImageFile = request.files['secretImage']
-    secretImage = io.BytesIO(secretImageFile.read())
+    secretImageString = io.BytesIO(secretImageFile.read())
     index = request.form.get('index', type=int, default=0)
+    
+    secretImage = base64_to_image(secretImageString)
     
     # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
     cwd = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +82,8 @@ def calculate_metrics():
         for coverImageFile in request.files.getlist('coverImage[]'):
             metrics = []
             
-            coverImage = io.BytesIO(coverImageFile.read())
+            coverImageString = io.BytesIO(coverImageFile.read())
+            coverImage = base64_to_image(coverImageString)
             coverImagePreproc = preprocess_image(coverImage)
             
             # Generate the Stego Image using the loaded model
@@ -102,7 +130,9 @@ def extract_hidden_image():
     stegoImageFile = request.files['stegoImage']
     index = request.form.get('index', type=int, default=0)
     
-    stegoImage = io.BytesIO(stegoImageFile.read())
+    stegoImageString = io.BytesIO(stegoImageFile.read())
+    
+    stegoImage = base64_to_image(stegoImageString)
     
     # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
     cwd = os.path.dirname(os.path.abspath(__file__))
@@ -146,8 +176,11 @@ def create_stego_image():
     secretImageFile = request.files['secretImage']
     index = request.form.get('index', type=int, default=0)
     
-    coverImage = io.BytesIO(coverImageFile.read())
-    secretImage = io.BytesIO(secretImageFile.read())
+    coverImageString = io.BytesIO(coverImageFile.read())
+    secretImageString = io.BytesIO(secretImageFile.read())
+    
+    coverImage = base64_to_image(coverImageString)
+    secretImage = base64_to_image(secretImageString)
     
     # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
     cwd = os.path.dirname(os.path.abspath(__file__))

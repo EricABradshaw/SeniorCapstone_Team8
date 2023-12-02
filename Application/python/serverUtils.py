@@ -3,6 +3,8 @@ import time
 import uuid
 import numpy as np
 import matplotlib.pyplot as plt
+import base64
+import io 
 from PIL import Image
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
@@ -72,3 +74,16 @@ def output_png(outputDir, filename, image, isBatch=False):
     image = (image * 255).astype(np.uint8) # do this in single stego image creation only?
     #plt.imsave(os.path.join(outputDir, filename), np.reshape(image.squeeze(), (224, 224, 3)))
     plt.imsave(os.path.join(outputDir, filename), image)
+    
+    
+def base64_to_image(base64String):
+    """
+    Decodes a base64 string into as a NumPy array.
+    
+    base64String: a Stego Image encoded as a base64 string.
+    
+    Returns: the decoded string as a NumPy array.
+    """
+    imgData = base64.b64decode(base64String)
+    image = Image.open(io.BytesIO(imgData))
+    return np.array(image)
