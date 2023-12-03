@@ -20,14 +20,13 @@ const sendRequestsController = {
   },
   extractSend: async (base64) => {
     try {
-      const form = new FormData()
-      form.append('stegoImage', base64)
-      const response = await axios.post(FLASK_SERVER_URL + '/extract_hidden_image', form, {
+      const response = await axios.post(FLASK_SERVER_URL + '/extract_hidden_image', base64, {
         headers: {
-          ...form.getHeaders()
+          'Content-Type': 'application/json'
         }
       })
-      return response.status
+      console.log("From Flask: " + response.status)
+      return response.data.hiddenImage
     } catch (error) {
       console.log('Error: ' + error)
     }

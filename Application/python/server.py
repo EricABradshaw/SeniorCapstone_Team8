@@ -119,46 +119,50 @@ def calculate_metrics():
 
 @app.route('/extract_hidden_image', methods=['POST'])
 def extract_hidden_image():
-    if 'stegoImage' not in request.files:
-        return jsonify({"error": "Stego image must be provided"}), 400
+    # if 'stegoImage' not in request.files:
+    #     return jsonify({"error": "Stego image must be provided"}), 400
 
-    stegoImageFile = request.files['stegoImage']
+    # stegoImageFile = request.files['stegoImage']
     index = request.form.get('index', type=int, default=0)
+    data = json.loads(request.data.decode('utf-8'))
     
-    stegoImageString = io.BytesIO(stegoImageFile.read())
-    
-    stegoImage = base64_to_image(stegoImageString)
-    
+    stegoImage = base64_to_image(data)
+    stegoImage = np.expand_dims(stegoImage, axis=0)
+    stegoImage = stegoImage[:, :, :, :3]
+    stegoImage = stegoImage / 255.0
+    # stegoImage = preprocess_image(stegoImage)
     # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
     cwd = os.path.dirname(os.path.abspath(__file__))
     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
     modelPaths = get_model_paths(modelsDir)
     inputModelPath = modelPaths[index]
-
     # Load the model here since the index being sent in may vary -
     # each index corresponds to a different model.
     try:
-        saver.restore(sess, inputModelPath)
+        with sess.graph.as_default():
+          saver.restore(sess, inputModelPath)
         tf.train.load_checkpoint(inputModelPath)
-        
-        # Open the Stego Image
-        stegoImage = open_image(stegoImage)
 
         # Extract the Hidden Image using the loaded model
         extractedImage = sess.run(deploy_reveal_image_op,
                                 feed_dict={"deploy_covered:0": stegoImage})
-        
+
         # Limit the values to between 0 and 1
+        # Clean up the image so it's a proper PNG
+        extractedImage = extractedImage.squeeze()
         extractedImage = np.clip(extractedImage, 0, 1)
-                
+        extractedImage = (extractedImage * 255).astype(np.uint8)
+
         # Now convert it into a byte stream
         extractedImageByteArray = io.BytesIO()
         Image.fromarray(extractedImage).save(extractedImageByteArray, format='PNG')
         extractedImageByteArray = extractedImageByteArray.getvalue()
-        
-        # Return the extracted image
-        return Response(response=extractedImage, mimetype='image/png')
+        extractedImageBase64 = base64.b64encode(extractedImageByteArray).decode('utf-8')
+        # Return the stego image
+        # return Response(response=stegoImage, mimetype='image/png')
+        return jsonify({"message":"Success", "hiddenImage":extractedImageBase64}), 200
     except Exception as e:
+        print(str(e))
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
 
 

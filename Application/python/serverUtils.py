@@ -56,12 +56,10 @@ def open_image(imagePath):
 
     Returns: the opened image transformed into a NumPy array.
     """
-    with Image.open(imagePath) as img:
-        img = img.convert('RGB')
-        img_array = np.array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
-            
-        return img_array
+    img_array = imagePath / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
+        
+    return img_array
 
 
 def output_png(outputDir, filename, image, isBatch=False):
@@ -87,3 +85,28 @@ def base64_to_image(base64String):
     imgData = base64.b64decode(base64String)
     image = Image.open(io.BytesIO(imgData))
     return np.array(image)
+
+def image_to_base64(imageArray):
+    """
+    Converts a NumPy array into an image encoded in base64.
+    
+    imageArray: a NumPy array containing image data.
+    
+    Returns: an image encoded in base64.
+    """
+    # imageArray = (imageArray * 255).astype(np.uint8)
+    # print(0)
+    # imagePIL = Image.fromarray(imageArray)
+    # print(1)
+    # # put image in a buffer
+    # buffer = io.BytesIO()
+    # print(2)
+    # imagePIL.save(buffer, format='PNG')
+    # print(3)
+    # buffer.seek(0)
+    # print(4)
+    
+    # imageBase64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    imageBase64 = base64.b64encode(imageArray)
+    
+    return imageBase64

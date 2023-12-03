@@ -1044,7 +1044,7 @@ def test_model():
 
 def preprocess_image(image_data):
     # Open the image
-    img = Image.open(image_data)
+    img = Image.fromarray(image_data)
 
     # If input is a byte stream instead of a file path, make sure we're at the beginning
     if isinstance(image_data, io.BytesIO):
