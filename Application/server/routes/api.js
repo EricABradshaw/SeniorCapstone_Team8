@@ -1,6 +1,6 @@
 const express = require('express')
 const multer = require('multer');
-
+const sharp = require('sharp')
 /* Communication from Node -> Flask */
 
 /* end */
@@ -19,12 +19,15 @@ router.post('/hide', controller.sendRequestsController.hideSend)
 // /api/extract POST: receive image from body, if not png, convert to png, send png to Flask server
 router.post('/extract', upload.single('stegoImage'), async (req, res) => {
   // Access the uploaded file using req.file.buffer
-  const stegoImageData = req.file.buffer.toString('base64');
-  let answer = await controller.sendRequestsController.extractSend(stegoImageData)
-  console.log('Status from Flask: ' + answer)
+  const stegoImageData = req.file.buffer
+  const resizedImage = await sharp(stegoImageData)
+    .resize(224, 224)
+    .toBuffer()
+  const base64Image = resizedImage.toString('base64')
+  let answer = await controller.sendRequestsController.extractSend(base64Image)
 
   // Send a response
-  res.json({ stegoImageData });
+  res.json({ stegoImageData: answer });
 });
 
 module.exports = router
