@@ -91,12 +91,12 @@ const Hide = () => {
           {stegoImage ? (
               <img
                 src={stegoImage}
-                alt={coverImage.alt || 'Fail'}
+                alt={''}
                 width={coverImage.width}
                 height={coverImage.height}
               />
             ) : (
-              <h1>Cover Image</h1>
+              <h1>Stego Image</h1>
             )}
         </div>
         <div className="filler"></div>
