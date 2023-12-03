@@ -15,6 +15,9 @@ if not verbose:
     logging.disable(logging.WARNING)
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow.compat.v1 as tf
+tf.enable_eager_execution()
+tf.compat.v1.enable_eager_execution()
+tf.config.run_functions_eagerly(True)
 if not verbose:
     logging.getLogger('tensorflow').disabled = True
     import warnings
@@ -164,6 +167,9 @@ def extract_hidden_image():
 
 @app.route('/create_stego_image_b64', methods=['POST'])
 def create_stego_image():
+    tf.enable_eager_execution()
+    tf.compat.v1.enable_eager_execution()
+    tf.config.run_functions_eagerly(True)
     coverImageString = request.json.get('coverString', '')
     secretImageString = request.json.get('secretString', '')
         
@@ -187,38 +193,34 @@ def create_stego_image():
     coverImage = base64_to_image(coverImageString)
     secretImage = base64_to_image(secretImageString)
     
-    
     cwd = os.path.dirname(os.path.abspath(__file__))
     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
     modelPaths = get_model_paths(modelsDir)
     inputModelPath = modelPaths[index]
-
     # Load the model here since the index being sent in may vary -
     # each index corresponds to a different model.
     try:
-        saver.restore(sess, inputModelPath)
+        with sess.graph.as_default():
+          saver.restore(sess, inputModelPath)
         tf.train.load_checkpoint(inputModelPath)
-        
         # Preprocess the images
         coverImagePreproc = preprocess_image(coverImage)
         secretImagePreproc = preprocess_image(secretImage)
-
         # Generate the Stego Image using the loaded model
         stegoImage = sess.run(deploy_hide_image_op,
                             feed_dict={"input_prep:0": [secretImagePreproc], "input_hide:0": [coverImagePreproc]})
-        
         # Clean up the image so it's a proper PNG
         stegoImage = stegoImage.squeeze()
         stegoImage = np.clip(stegoImage, 0, 1)
         stegoImage = (stegoImage * 255).astype(np.uint8)
-        
         # Now convert it into a byte stream
         stegoImageByteArray = io.BytesIO()
         Image.fromarray(stegoImage).save(stegoImageByteArray, format='PNG')
         stegoImageByteArray = stegoImageByteArray.getvalue()
-        
+        stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
         # Return the stego image
-        return Response(response=stegoImage, mimetype='image/png')
+        # return Response(response=stegoImage, mimetype='image/png')
+        return jsonify({"message":"Success", "stegoImage":stegoImageBase64}), 200
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
       

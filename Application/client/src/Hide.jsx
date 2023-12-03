@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Modal from './Modal_ImageGallery';
 import axios from 'axios'
 
@@ -12,6 +12,8 @@ const Hide = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [processing, setProcessing] = useState(false);
+
+  const [stegoImage, setStegoImage] = useState(null);
 
   // Callback function to be passed to GridGallery
   const handleCoverImageSelect = (image) => {
@@ -43,7 +45,8 @@ const Hide = () => {
       console.log("Sending request...")
       await axios.post('http://localhost:9000/api/hide', { coverImageData, secretImageData })
         .then(response => {
-          console.log('Data sent!')
+          console.log(response)
+          setStegoImage(`data:image/png;base64,${response.data.stegoImage}`)
           setProcessing(false)
         })
         .catch(error => {
@@ -85,7 +88,16 @@ const Hide = () => {
         </div>
         <img src='/images/equals_sign.svg' height={200} width={200} alt='Equals Sign'></img>
         <div id="stegoImageSection">
-          <h1>Stego Image</h1>
+          {stegoImage ? (
+              <img
+                src={stegoImage}
+                alt={coverImage.alt || 'Fail'}
+                width={coverImage.width}
+                height={coverImage.height}
+              />
+            ) : (
+              <h1>Cover Image</h1>
+            )}
         </div>
         <div className="filler"></div>
       </div>

@@ -1,8 +1,10 @@
 /* Communicate with Flask server */
 const axios = require('axios')
 const sharp = require('sharp') // image processing
+const base64Img = require('base64-img')
 const FormData = require('form-data')
 const FLASK_SERVER_URL = 'http://127.0.0.1:5000' // put in env
+const fs = require('fs')
 
 const sendRequestsController = {
   // Sending a post request to Flask server for creating stego 
@@ -12,8 +14,8 @@ const sendRequestsController = {
       const secretImageSource = req.body.secretImageData
       console.log(`Request received from ${req.get('origin')}`)
       let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
-      helperFunctions.sendToFlask(base64Strings)
-      res.send('Response')
+      let stego64String = await helperFunctions.sendToFlask(base64Strings)
+      res.status(200).json({ stegoImage: stego64String })
     } catch (err) {
       console.log(err)
     }
@@ -56,12 +58,19 @@ const helperFunctions = {
   // Sends the object containing two png buffers to Flask server
   sendToFlask: async (data) => {
     try {
-      const response = await axios.post(FLASK_SERVER_URL + '/create_stego_image', data, {
+      let resData
+      await axios.post(FLASK_SERVER_URL + '/create_stego_image_b64', data, {
         headers: {
           'Content-Type': 'application/json'
         }
       })
-      console.log("From Flask: " + response.status + response.message)
+        .then(async response => {
+          console.log('Success:',response.status)
+          resData = await response.data.stegoImage
+        })
+
+        return resData
+
     } catch (err) {
       console.error(err)
     }
