@@ -43,5 +43,19 @@ npm i react-scripts -E
 cd ..
 npm i -g concurrently
 npm i
+```
+
+The above setup can be done via the setup shell script from either
+
+- Bash or Bash-like:
+  `source setup.sh`
+- PowerShell:
+  `.\setup.bat`
+
+These scripts will also create a .env file for you in /Application/.
+
+To run the environment:
+
+```
 npm run all
 ```
