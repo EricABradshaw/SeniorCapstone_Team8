@@ -26,21 +26,21 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 
 
-@app.route('/create_stego_image', methods=['POST'])
-def create_stego_image():
-  try:
-    print("Flask request received")
-    cover_image_string = request.json.get('coverString', '')
-    secret_image_string = request.json.get('secretString', '')
+# @app.route('/create_stego_image', methods=['POST'])
+# def create_stego_image():
+#   try:
+#     print("Flask request received")
+#     cover_image_string = request.json.get('coverString', '')
+#     secret_image_string = request.json.get('secretString', '')
     
-    cover_image = base64_to_image(cover_image_string)
-    secret_image = base64_to_image(secret_image_string)
+#     cover_image = base64_to_image(cover_image_string)
+#     secret_image = base64_to_image(secret_image_string)
     
-    print("Images received!")
-    return 'Images received!', 200
-  except Exception as e:
-    print(f"Error: {str(e)}")
-    return 'Error!', 500 
+#     print("Images received!")
+#     return 'Images received!', 200
+#   except Exception as e:
+#     print(f"Error: {str(e)}")
+#     return 'Error!', 500 
 
 
 @app.route('/calculate_metrics', methods=['POST'])
@@ -163,21 +163,24 @@ def extract_hidden_image():
 
 
 @app.route('/create_stego_image_b64', methods=['POST'])
-def create_stego_image_b64():
-    if 'coverImage' not in request.files or 'secretImage' not in request.files:
-        return jsonify({"error": "Both cover and secret images must be provided"}), 400
-    
+def create_stego_image():
+    coverImageString = request.json.get('coverString', '')
+    secretImageString = request.json.get('secretString', '')
+        
     if Debug:
-        print("Flask request received")
-        print(f"Received cover image: {coverImage.filename}, type: {coverImage.content_type}")
-        print(f"Received secret image: {secretImage.filename}, type: {secretImage.content_type}")
+        print("Flask request received.")
     
-    coverImageFile = request.files['coverImage']
-    secretImageFile = request.files['secretImage']
-    index = request.form.get('index', type=int, default=0)
+    if not coverImageString:
+        return 'Error! No cover image provided', 500 
+        
+    if not secretImageString:
+        return 'Error! No secret image provided', 500 
     
-    coverImageString = io.BytesIO(coverImageFile.read())
-    secretImageString = io.BytesIO(secretImageFile.read())
+    index = 0
+    #index = request.form.get('index', type=int, default=0)
+    
+    #coverImageString = io.BytesIO(coverImageFile.read())
+    #secretImageString = io.BytesIO(secretImageFile.read())
     #coverImage.show()
     #secretImage.show()
     
