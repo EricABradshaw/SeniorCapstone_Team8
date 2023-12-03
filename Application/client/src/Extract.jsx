@@ -41,22 +41,11 @@ const Extract = () => {
   
         const response = await axios.post('http://localhost:9000/api/extract', formData);
   
-        // Assuming the response contains the extracted secretImage data
+        // Assuming the response contains the extracted secretImageData as base64
         const secretImageData = response.data.stegoImageData;
   
-        // Convert base64 to binary data
-        const binaryData = atob(secretImageData);
-  
-        // Create an array buffer from binary data
-        const arrayBuffer = new ArrayBuffer(binaryData.length);
-        const uint8Array = new Uint8Array(arrayBuffer);
-  
-        for (let i = 0; i < binaryData.length; i++) {
-          uint8Array[i] = binaryData.charCodeAt(i);
-        }
-  
-        // Create a Blob from the array buffer
-        const blob = new Blob([arrayBuffer]);
+        // Create a Blob from the base64 string
+        const blob = b64toBlob(secretImageData);
   
         // Create a data URL for the blob
         const dataUrl = URL.createObjectURL(blob);
@@ -71,6 +60,27 @@ const Extract = () => {
         setProcessing(false);
       }
     }
+  };
+  
+  // Helper function to convert base64 to Blob
+  const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+    const byteCharacters = atob(b64Data);
+    const byteArrays = [];
+  
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+  
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+  
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+  
+    const blob = new Blob(byteArrays, { type: contentType });
+    return blob;
   };
   
 
