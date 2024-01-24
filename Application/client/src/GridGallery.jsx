@@ -34,32 +34,35 @@ class GridGallery extends React.Component {
   constructor() {
     super();
     this.state = {
-      images: [],
+      images: []
     };
   }
 
   componentDidMount() {
     console.log('Component mounted')
-     getImages(NUM_IMAGES_REQUEST_FROM_API)
-      .then(data => {
-        // Assuming data is an array of image objects with URLs
-        let image_array = []
+    this.loadImages()
+  }
 
-        data.forEach(element => {
-          let source = `https://picsum.photos/id/${element}/224`
-          image_array.push({
-            src: source,
-            width: 224,
-            height: 224,
-          });
+  loadImages = () => {
+    getImages(NUM_IMAGES_REQUEST_FROM_API)
+    .then(data => {
+      // Assuming data is an array of image objects with URLs
+      let image_array = []
+
+      data.forEach(element => {
+        let source = `https://picsum.photos/id/${element}/224`
+        image_array.push({
+          src: source,
+          width: 224,
+          height: 224,
         });
-
-        this.setState({ images: image_array });
-      })
-      .catch(error => {
-        console.error(error.message);
       });
 
+      this.setState({ images: image_array });
+    })
+    .catch(error => {
+      console.error(error.message);
+    });
   }
 
   handleImageSelect = (index, image) => {
@@ -77,4 +80,4 @@ class GridGallery extends React.Component {
 
 }
 
-export { GridGallery };
+export { GridGallery, getImages };

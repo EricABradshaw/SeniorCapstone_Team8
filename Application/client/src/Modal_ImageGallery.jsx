@@ -1,5 +1,5 @@
-import React from 'react'
-import { GridGallery } from './GridGallery';
+import React, { useState } from 'react'
+import { GridGallery, getImages } from './GridGallery';
 
 const handleUploadClick = async () => {
   try {
@@ -27,7 +27,10 @@ const selectFile = () => {
 };
 
 const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleCoverImageSelect }) => {
-
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleRefreshClick = () => {
+    setRefreshKey((prevKey) => prevKey + 1)
+  }
   // Callback function to be passed to GridGallery
   const handleImageSelect = (index, image) => {
     if (selectedItem === "coverImage")
@@ -39,14 +42,17 @@ const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleC
   };
 
   return (
-    <div className={`modal ${isOpen ? 'open' : ''}`} onClick={onClose}>
+    <div key={refreshKey} className={`modal ${isOpen ? 'open' : ''}`} onClick={onClose}>
       <div className='overlay'></div>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div id="imageGallery">
           <GridGallery onSelect={handleImageSelect} />
         </div>
-        <button onClick={onClose}>Close</button>
-        <button onClick={handleUploadClick}>Upload your own</button>
+        <div style={{ marginTop: '20px'}}>
+          <button onClick={handleRefreshClick}>Refresh</button>
+          <button onClick={onClose} style={{ marginInlineStart: '10px', marginInlineEnd: '10px'}}>Close</button>
+          <button onClick={handleUploadClick}>Upload your own</button>
+        </div>
       </div>
     </div>
   );
