@@ -13,6 +13,20 @@ Install [Python 3.10.11](https://www.python.org/downloads/release/python-31011/)
 - Be sure to check the box that says "Add Python 3.x to PATH"
 - After installation, add `%appdata%\Python\Python3x\Scripts` to your PATH.
 
+## Quick Steup
+
+Running Bash on a Windows machine
+
+```
+git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
+cd SeniorCapstone_Team8
+./setup.sh
+cd Application
+npm run all
+```
+
+The server should automatically run in the python virtual environment.
+
 ## Development Setup Instructions
 
 ```
@@ -54,7 +68,7 @@ The above setup can be done via the setup shell script from either
 
 These scripts will also create a .env file for you in /Application/.
 
-To run the environment:
+To run the environment, enter the Application directory, then:
 
 ```
 npm run all
