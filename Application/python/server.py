@@ -3,7 +3,9 @@ from flask_cors import CORS
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-from SteGuz import deploy_hide_image_op, deploy_reveal_image_op, sess, saver, preprocess_image, verbose
+#from SteGuz import deploy_hide_image_op, deploy_reveal_image_op, sess, saver, preprocess_image, verbose
+#import NSteGuz
+from NSteGuz import StegoModel
 import os
 import argparse
 import io
@@ -15,6 +17,7 @@ from serverUtils import *
 #     logging.disable(logging.WARNING)
 #     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
+from tensorflow.python.saved_model import load_options
 
 # if not verbose:
 #     logging.getLogger('tensorflow').disabled = True
@@ -152,9 +155,6 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 
 @app.route('/create_stego_image_b64', methods=['POST'])
 def create_stego_image():
-    tf.enable_eager_execution()
-    tf.compat.v1.enable_eager_execution()
-    tf.config.run_functions_eagerly(True)
     coverImageString = request.json.get('coverString', '')
     secretImageString = request.json.get('secretString', '')
         
@@ -177,29 +177,36 @@ def create_stego_image():
     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
     modelPaths = get_model_paths(modelsDir)
     inputModelPath = modelPaths[index]
+    print(f'Attempting to load model from {inputModelPath}')
     # Load the model here since the index being sent in may vary -
     # each index corresponds to a different model.
     try:
-        with sess.graph.as_default():
-          saver.restore(sess, inputModelPath)
-        tf.train.load_checkpoint(inputModelPath)
-        # Preprocess the images
+        my_load_options = load_options(experimental_io_device='/job:localhost')
+        #model = StegoModel()
+        #model = tf.keras.models.load_model(inputModelPath, options=my_load_options)
+        model = tf.keras.models.load_model(inputModelPath, options=my_load_options, custom_objects={'StegoModel': StegoModel})
+        
+        # Preprocess the images 
         coverImagePreproc = preprocess_image(coverImage)
         secretImagePreproc = preprocess_image(secretImage)
+        
         # Generate the Stego Image using the loaded model
-        stegoImage = sess.run(deploy_hide_image_op,
-                            feed_dict={"input_prep:0": [secretImagePreproc], "input_hide:0": [coverImagePreproc]})
+        stegoImage = model.predict([secretImagePreproc, coverImagePreproc])
+        #stegoImage = model.predict([np.expand_dims(secretImagePreproc, axis=0), np.expand_dims(coverImagePreproc, axis=0)])
+
+        
         # Clean up the image so it's a proper PNG
         stegoImage = stegoImage.squeeze()
         stegoImage = np.clip(stegoImage, 0, 1)
         stegoImage = (stegoImage * 255).astype(np.uint8)
-        # Now convert it into a byte stream
+        
+        # Now convert it into a byte stream then base64
         stegoImageByteArray = io.BytesIO()
         Image.fromarray(stegoImage).save(stegoImageByteArray, format='PNG')
         stegoImageByteArray = stegoImageByteArray.getvalue()
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
+        
         # Return the stego image
-        # return Response(response=stegoImage, mimetype='image/png')
         return jsonify({"message":"Success", "stegoImage":stegoImageBase64}), 200
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500

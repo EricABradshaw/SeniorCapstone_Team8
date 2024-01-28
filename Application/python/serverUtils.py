@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import base64
 import io 
 from PIL import Image
+from skimage import img_as_float
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
 
@@ -31,9 +32,9 @@ def get_model_paths(directory):
 
     for item in items:
         item_path = os.path.join(directory, item)
-        item_path = os.path.join(item_path, item)
+        #item_path = os.path.join(item_path, item)
         model_folders.append(item_path)
-        # if os.path.isdir(item_path):
+        #if os.path.isdir(item_path):
         #    model_folders.append(item)
 
     return model_folders
@@ -46,6 +47,19 @@ def generate_filename():
     timestamp = int(time.time())
     unique_id = uuid.uuid4()
     return f'{timestamp}_{unique_id}'
+
+
+def preprocess_image(image_data):
+    img = Image.fromarray(image_data)
+    
+    # If the image has an alpha (transparency) channel, remove it
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+
+    # Resize the image
+    img = img.resize((224, 224))
+
+    return img_as_float(img)
 
 
 def open_image(imagePath):
@@ -85,6 +99,7 @@ def base64_to_image(base64String):
     imgData = base64.b64decode(base64String)
     image = Image.open(io.BytesIO(imgData))
     return np.array(image)
+
 
 def image_to_base64(imageArray):
     """
