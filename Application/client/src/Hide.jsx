@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Modal from './Modal_ImageGallery';
+import SliderControl from './SliderControl';
 import axios from 'axios'
 
 const Hide = () => {
@@ -12,6 +13,7 @@ const Hide = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [sliderValue, setSliderValue] = useState(3);
 
   const [stegoImage, setStegoImage] = useState(null);
 
@@ -38,12 +40,16 @@ const Hide = () => {
     setSelectedItem(null);
   };
 
+  const handleSliderChange = (value) => {
+    setSliderValue(value)
+  }
+
   const handleHideButtonClicked = async () => {
     setProcessing(true)
 
     if (coverImage && secretImage) {
       console.log("Sending request...")
-      await axios.post('http://localhost:9000/api/hide', { coverImageData, secretImageData })
+      await axios.post('http://localhost:9000/api/hide', { coverImageData, secretImageData, sliderValue })
         .then(response => {
           console.log(response)
           setStegoImage(`data:image/png;base64,${response.data.stegoImage}`)
@@ -100,6 +106,9 @@ const Hide = () => {
             )}
         </div>
         <div className="filler"></div>
+      </div>
+      <div id='sliderContainer'>
+        <SliderControl onSliderChange={handleSliderChange} />
       </div>
       <div id='submitButtonSection'>
         <button id='submitButton' onClick={handleHideButtonClicked}>
