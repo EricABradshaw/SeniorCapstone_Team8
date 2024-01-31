@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import pathlib
 import random
 import pandas as pd
+import numpy as np
+from skimage import img_as_float
 
 import time
 from datetime import datetime
@@ -38,6 +40,25 @@ def get_model_paths(directory):
 
     return model_folders
 
+def preprocess_image(img_path):
+    img = Image.open(img_path)
+    if img.mode == 'RGBA':
+        img = img.convert('RGB')
+    img = img.resize((224, 224))
+    return img_as_float(img)
+
+# def preprocess_image(image_data):
+#     img = Image.fromarray(image_data)
+    
+#     # If the image has an alpha (transparency) channel, remove it
+#     if img.mode != 'RGB':
+#         img = img.convert('RGB')
+
+#     # Resize the image
+#     img = img.resize((224, 224))
+
+#     return img_as_float(img)
+
 if __name__ == '__main__':
     index = 0
         
@@ -52,4 +73,19 @@ if __name__ == '__main__':
     #load_options = tf.saved_model.LoadOptions(experimental_io_device='/job:localhost')
     model = keras.models.load_model(inputModelPath)
     
-
+    coverImage = "C:\\Users\\jacob\\Dropbox\\2024 Spring\\SeniorCapstone_Team8\\Application\\python\\Test Images\\Parachute.png"
+    secretImage = "C:\\Users\\jacob\\Dropbox\\2024 Spring\\SeniorCapstone_Team8\\Application\\python\\Test Images\\Pens.png"
+    
+    coverImagePreproc = preprocess_image(coverImage)
+    secretImagePreproc = preprocess_image(secretImage)
+        
+    coverImagePreproc = np.expand_dims(coverImagePreproc, axis=0)
+    secretImagePreproc = np.expand_dims(secretImagePreproc, axis=0)
+    
+    
+    
+    # secret, cover
+    stegoImage = model([secretImagePreproc, coverImagePreproc])
+    stegoImage = tf.sigmoid(stegoImage)
+    
+    print('Done')

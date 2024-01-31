@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cd Application/python
-py -3 -m venv .venv
-. .venv/Scripts/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 cd ..
 cd client
@@ -22,4 +22,4 @@ if [ ! -f "$ENV_FILE" ]; then
     echo ".env file created in /Application"
 else
     echo ".env file already exists in /Application"
-fi
+fi  

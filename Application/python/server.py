@@ -181,17 +181,17 @@ def create_stego_image():
     # Load the model here since the index being sent in may vary -
     # each index corresponds to a different model.
     try:
-        my_load_options = load_options(experimental_io_device='/job:localhost')
         #model = StegoModel()
-        #model = tf.keras.models.load_model(inputModelPath, options=my_load_options)
-        model = tf.keras.models.load_model(inputModelPath, options=my_load_options, custom_objects={'StegoModel': StegoModel})
+        model = tf.keras.models.load_model(inputModelPath)
+        #model = tf.keras.models.load_model(inputModelPath, custom_objects={'StegoModel': StegoModel})
         
         # Preprocess the images 
         coverImagePreproc = preprocess_image(coverImage)
         secretImagePreproc = preprocess_image(secretImage)
         
         # Generate the Stego Image using the loaded model
-        stegoImage = model.predict([secretImagePreproc, coverImagePreproc])
+        #stegoImage = model.predict([secretImagePreproc, coverImagePreproc])
+        stegoImage = model.call(np.expand_dims(secretImagePreproc, axis=0), np.expand_dims(coverImagePreproc, axis=0))
         #stegoImage = model.predict([np.expand_dims(secretImagePreproc, axis=0), np.expand_dims(coverImagePreproc, axis=0)])
 
         
