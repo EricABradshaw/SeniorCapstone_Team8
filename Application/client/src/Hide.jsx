@@ -115,7 +115,11 @@ const Hide = () => {
           {processing ? 'Processing...' : 'Hide!'}
         </button>
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} selectedItem={selectedItem} handleCoverImageSelect={handleCoverImageSelect} handleSecretImageSelect={handleSecretImageSelect} />
+      <Modal isOpen={isModalOpen} 
+             onClose={handleCloseModal} 
+             selectedItem={selectedItem} 
+             handleCoverImageSelect={handleCoverImageSelect} 
+             handleSecretImageSelect={handleSecretImageSelect} />
     </div>
   );
 }
