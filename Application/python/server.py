@@ -7,6 +7,7 @@ from PIL import Image
 #import NSteGuz
 from NSteGuz import StegoModel
 import os
+import glob
 import argparse
 import io
 import base64
@@ -17,7 +18,6 @@ from serverUtils import *
 #     logging.disable(logging.WARNING)
 #     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
-from tensorflow.python.saved_model import load_options
 
 # if not verbose:
 #     logging.getLogger('tensorflow').disabled = True
@@ -104,102 +104,139 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 #         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
 
 
-# @app.route('/extract_hidden_image', methods=['POST'])
-# def extract_hidden_image():
-#     # if 'stegoImage' not in request.files:
-#     #     return jsonify({"error": "Stego image must be provided"}), 400
-
-#     # stegoImageFile = request.files['stegoImage']
-#     index = request.form.get('index', type=int, default=0)
-#     data = json.loads(request.data.decode('utf-8'))
+@app.route('/extract_hidden_image', methods=['POST'])
+def extract_hidden_image():
+    if 'stegoImage' not in request.files:
+        return jsonify({"error": "Stego image must be provided"}), 400
+    # Check for beta value sent from front end; default to 0.5 if not provided
+    #beta = request.json.get('beta', 0.50)
+    beta = 0.50
+    print(f'BETA IS {beta}')
     
-#     stegoImage = base64_to_image(data)
-#     stegoImage = np.expand_dims(stegoImage, axis=0)
-#     stegoImage = stegoImage[:, :, :, :3]
-#     stegoImage = stegoImage / 255.0
-#     # stegoImage = preprocess_image(stegoImage)
-#     # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
-#     cwd = os.path.dirname(os.path.abspath(__file__))
-#     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
-#     modelPaths = get_model_paths(modelsDir)
-#     inputModelPath = modelPaths[index]
-#     # Load the model here since the index being sent in may vary -
-#     # each index corresponds to a different model.
-#     try:
-#         with sess.graph.as_default():
-#           saver.restore(sess, inputModelPath)
-#         tf.train.load_checkpoint(inputModelPath)
+    data = json.loads(request.data.decode('utf-8'))
+    
+    stegoImage = base64_to_image(data)
+    stegoImage = np.expand_dims(stegoImage, axis=0)
+    stegoImage = stegoImage[:, :, :, :3]
+    stegoImage = stegoImage / 255.0
 
-#         # Extract the Hidden Image using the loaded model
-#         extractedImage = sess.run(deploy_reveal_image_op,
-#                                 feed_dict={"deploy_covered:0": stegoImage})
+    # Assign/validate beta value
+    try:
+        beta = float(beta)
+        if not (0 <= beta <= 1):
+            raise ValueError("Beta value must be between 0 and 1.")
+    except ValueError as e:
+        return jsonify({"error": "Invalid beta value. Details: " + str(e)}), 400
+    print(f'BETA IS {beta}')
 
-#         # Limit the values to between 0 and 1
-#         # Clean up the image so it's a proper PNG
-#         extractedImage = extractedImage.squeeze()
-#         extractedImage = np.clip(extractedImage, 0, 1)
-#         extractedImage = (extractedImage * 255).astype(np.uint8)
+    # Load the appropriate model based on the provided beta value
+    targetBetas = [0.25, 0.50, 0.75]
+    closestBeta = min(targetBetas, key=lambda x: abs(x - beta))
+    print(f'CLOSEST BETA IS {closestBeta}')
 
-#         # Now convert it into a byte stream
-#         extractedImageByteArray = io.BytesIO()
-#         Image.fromarray(extractedImage).save(extractedImageByteArray, format='PNG')
-#         extractedImageByteArray = extractedImageByteArray.getvalue()
-#         extractedImageBase64 = base64.b64encode(extractedImageByteArray).decode('utf-8')
-#         # Return the stego image
-#         # return Response(response=stegoImage, mimetype='image/png')
-#         return jsonify({"message":"Success", "hiddenImage":extractedImageBase64}), 200
-#     except Exception as e:
-#         print(str(e))
-#         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
+    # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    modelsDir = os.path.join(os.path.dirname(cwd), 'models')
+    betaFolderName = f"b{closestBeta:.2f}"
+    print(f'Attempting to load model with {betaFolderName}')
+    
+    modelFolder = glob.glob(os.path.join(modelsDir, betaFolderName + "*"))
+    if not modelFolder:
+        return jsonify({"error": f"No model found for beta value: {beta}"}), 404
+    #print(f'MODEL FOLDER SELECTED IS {modelFolder}')
+    inputModelPath = modelFolder[0]
+
+    # Load the model
+    try:
+        model = tf.keras.models.load_model(inputModelPath)
+        
+        # How we generated the Stego Image using the loaded model
+        extractedImage, _ = model.call((
+            np.expand_dims(stegoImage, axis=0),
+            np.expand_dims(stegoImage, axis=0)
+        ))
+        
+        # Limit the values to between 0 and 1
+        # Clean up the image so it's a proper PNG
+        extractedImage = extractedImage.squeeze()
+        extractedImage = np.clip(extractedImage, 0, 1)
+        extractedImage = (extractedImage * 255).astype(np.uint8)
+        
+        # Now convert it into a byte stream
+        extractedImageByteArray = io.BytesIO()
+        Image.fromarray(extractedImage).save(extractedImageByteArray, format='PNG')
+        extractedImageByteArray = extractedImageByteArray.getvalue()
+        extractedImageBase64 = base64.b64encode(extractedImageByteArray).decode('utf-8')
+        
+        # Return the extracted image
+        return jsonify({"message":"Success", "hiddenImage":extractedImageBase64}), 200
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
 
 
 @app.route('/create_stego_image_b64', methods=['POST'])
 def create_stego_image():
     coverImageString = request.json.get('coverString', '')
     secretImageString = request.json.get('secretString', '')
-        
+    # Check for beta value sent from front end; default to 0.5 if not provided
+    beta = request.json.get('beta', 0.50)
+    print(f'BETA IS {beta}')
+    
     if Debug:
         print("Flask request received.")
     
+    # Get cover/secret image
     if not coverImageString:
         return 'Error! No cover image provided', 500 
         
     if not secretImageString:
         return 'Error! No secret image provided', 500 
     
-    index = 0
-    #index = request.form.get('index', type=int, default=0)
-        
     coverImage = base64_to_image(coverImageString)
     secretImage = base64_to_image(secretImageString)
     
+    # Assign/validate beta value
+    try:
+        beta = float(beta)
+        if not (0 <= beta <= 1):
+            raise ValueError("Beta value must be between 0 and 1.")
+    except ValueError as e:
+        return jsonify({"error": "Invalid beta value. Details: " + str(e)}), 400
+    #print(f'BETA IS {beta}')
+
+    # Load the appropriate model based on the provided beta value
+    targetBetas = [0.25, 0.50, 0.75]
+    closestBeta = min(targetBetas, key=lambda x: abs(x - beta))
+    #print(f'CLOSEST BETA IS {closestBeta}')
+
     cwd = os.path.dirname(os.path.abspath(__file__))
     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
-    modelPaths = get_model_paths(modelsDir)
-    inputModelPath = modelPaths[index]
+    betaFolderName = f"b{closestBeta:.2f}"
+    print(f'Attempting to load model with {betaFolderName}')
+    
+    modelFolder = glob.glob(os.path.join(modelsDir, betaFolderName + "*"))
+    if not modelFolder:
+        return jsonify({"error": f"No model found for beta value: {beta}"}), 404
+    #print(f'MODEL FOLDER SELECTED IS {modelFolder}')
+    inputModelPath = modelFolder[0]
+    
     print(f'Attempting to load model from {inputModelPath}')
-    # Load the model here since the index being sent in may vary -
-    # each index corresponds to a different model.
+    # Load the model
     try:
-        #model = StegoModel()
         model = tf.keras.models.load_model(inputModelPath)
-        #model = tf.keras.models.load_model(inputModelPath, custom_objects={'StegoModel': StegoModel})
         
         # Preprocess the images 
         coverImagePreproc = preprocess_image(coverImage).astype(np.float32)
         secretImagePreproc = preprocess_image(secretImage).astype(np.float32)
         
         # Generate the Stego Image using the loaded model
-        #stegoImage = model.predict([secretImagePreproc, coverImagePreproc])
-        extractedImage, stegoImage = model.call((
+        _, stegoImage = model.call((
             np.expand_dims(secretImagePreproc, axis=0),
             np.expand_dims(coverImagePreproc, axis=0)
         ))
-        #stegoImage = model.predict([np.expand_dims(secretImagePreproc, axis=0), np.expand_dims(coverImagePreproc, axis=0)])
-
         
         # Clean up the image so it's a proper PNG
-        #stegoImage = stegoImage.squeeze()
         stegoImage = stegoImage.numpy().squeeze()
         stegoImage = np.clip(stegoImage, 0, 1)
         stegoImage = (stegoImage * 255).astype(np.uint8)
