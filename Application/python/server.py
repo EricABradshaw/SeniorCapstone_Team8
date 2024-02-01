@@ -186,17 +186,21 @@ def create_stego_image():
         #model = tf.keras.models.load_model(inputModelPath, custom_objects={'StegoModel': StegoModel})
         
         # Preprocess the images 
-        coverImagePreproc = preprocess_image(coverImage)
-        secretImagePreproc = preprocess_image(secretImage)
+        coverImagePreproc = preprocess_image(coverImage).astype(np.float32)
+        secretImagePreproc = preprocess_image(secretImage).astype(np.float32)
         
         # Generate the Stego Image using the loaded model
         #stegoImage = model.predict([secretImagePreproc, coverImagePreproc])
-        stegoImage = model.call(np.expand_dims(secretImagePreproc, axis=0), np.expand_dims(coverImagePreproc, axis=0))
+        extractedImage, stegoImage = model.call((
+            np.expand_dims(secretImagePreproc, axis=0),
+            np.expand_dims(coverImagePreproc, axis=0)
+        ))
         #stegoImage = model.predict([np.expand_dims(secretImagePreproc, axis=0), np.expand_dims(coverImagePreproc, axis=0)])
 
         
         # Clean up the image so it's a proper PNG
-        stegoImage = stegoImage.squeeze()
+        #stegoImage = stegoImage.squeeze()
+        stegoImage = stegoImage.numpy().squeeze()
         stegoImage = np.clip(stegoImage, 0, 1)
         stegoImage = (stegoImage * 255).astype(np.uint8)
         

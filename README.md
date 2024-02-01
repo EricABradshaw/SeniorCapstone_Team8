@@ -1,22 +1,40 @@
-# SeniorCapstone_Team8
+# StegoSource
 
-Senior Capstone project Team 8 AY 2023-24
+Purdue Fort Wayne Senior Capstone Project AY 2023-24, Team 8
 
-## Python Setup
+Utilizing a CNN-Based Image-in-Image Steganography Model in a Web-Based Application
 
-The models were developed using an older version of TensorFlow; 1.xx compatibility has decreased in later releases and full-blown conversion to 2.xx is not within our scope, so to properly use the models we need a version of Python that is compatible with TensorFlow 2.8.0, the latest of which is Python 3.10.11.
+This project utilizes a CNN-based machine learning model developed by Dr. Amal Khalifa and her team at Purdue University Fort Wayne. 
 
-While not strictly required it's probably best to uninstall any other versions of Python.
+## Dependency Installation
 
-Install [Python 3.10.11](https://www.python.org/downloads/release/python-31011/)
+### Python
 
+The image-in-image steganography models used for this project are CNN models utilizing the SteGuz method. You will need to install a version of Python that supports TensorFlow version 2.12.0.
+
+We have been developing and running this application under Python [Python 3.10.11](https://www.python.org/downloads/release/python-31011/).
+
+*While not strictly required it is best to have only one version of Python installed on your machine.*
+
+While installing Python:
 - Be sure to check the box that says "Add Python 3.x to PATH"
-- After installation, add `%appdata%\Python\Python3x\Scripts` to your PATH.
+- After installation, add `%appdata%\Python\Python3x\Scripts` to PATH (if it's not already there).
+
+### node.js
+
+node.js gives us the package manager `npm` and is also the main back-end for our application. `npm` is also necessary to install the required front-end packages, namely React and its dependencies.
+
+Download and install it from [here](https://nodejs.org/en/download/current).
+
+### MongoDB
+
+MongoDB is required for the database utilized by this web application. Download and install it from [here](https://www.mongodb.com/try/download/community).
 
 ## Quick Setup
 
-Running Bash on a Windows machine
+Install the dependencies as described above.
 
+If you are running Bash on a Windows machine:
 ```
 git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
 cd SeniorCapstone_Team8
@@ -25,36 +43,51 @@ cd Application
 npm run all
 ```
 
-Running Bash on a Linux machine
-
+If you are running Bash on a Linux machine:
+```
+git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
+cd SeniorCapstone_Team8
+./setup-Linux.sh
+cd Application
+npm run all
 ```
 
-```
+The server should automatically run in the Python virtual environment. Your terminal does not need to be in the virtual environment when calling `npm run all`.
 
-The server should automatically run in the python virtual environment.
+## Manual Setup
 
-## Development Setup Instructions
+### Clone this repository
 
+In any terminal:
 ```
 git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
 cd SeniorCapstone_Team8/Application/python
+```
+
+### Activate the virtual environment
+
+On Windows using Bash: 
+```
 py -3 -m venv .venv
-```
-
-If you are using Bash or an equivalent shell:
-
-```
 . .venv/Scripts/activate
 ```
 
-If you are using command prompt or PowerShell:
-
+On Linux using Bash or equivalent:
 ```
+python3 -m venv .venv
+source ./.venv/bin/activate
+```
+
+On Windows using PowerShell or Command Prompt:
+```
+py -3 -m venv .venv
 .venv\Scripts\activate
 ```
+You will know you're in the virtual environment when all commands output by your shell end with `(.venv)`
 
-In VS Code, open the command palette (Ctrl+Shift+P) and type "Python: select interpreter...". Set it to the python.exe found in your .venv folder.
+### Install npm Packages and Python Dependencies
 
+In any terminal with the Python virtual environment active:
 ```
 pip install -r requirements.txt
 cd ..
@@ -65,17 +98,16 @@ npm i -g concurrently
 npm i
 ```
 
-The above setup can be done via the setup shell script from either
+You will also need to create a file called `.env` in `/Application/` with the following contents:
+```
+PORT=7000
+MONGO_URI="mongodb://127.0.0.1/<databasename>"
+FLASK_SERVER_URI="localhost:5000"
+```
 
-- Bash or Bash-like:
-  `source setup.sh`
-- PowerShell:
-  `.\setup.bat`
+### Start the web app locally
 
-These scripts will also create a .env file for you in /Application/.
-
-To run the environment, enter the Application directory, then:
-
+Finally, to start the web server:
 ```
 npm run all
 ```

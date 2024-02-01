@@ -2,7 +2,7 @@
 
 cd Application/python
 python3 -m venv .venv
-source .venv/bin/activate
+source ./.venv/bin/activate
 pip install -r requirements.txt
 cd ..
 cd client
@@ -15,7 +15,7 @@ npm i
 ENV_FILE="Application/.env"
 
 if [ ! -f "$ENV_FILE" ]; then
-    echo "PORT=9000" > "$ENV_FILE"
+    echo "PORT=7000" > "$ENV_FILE"
     echo 'MONGO_URI="mongodb://127.0.0.1/capstone"' >> "$ENV_FILE"
     echo 'FLASK_SERVER_URI="localhost:5000"' >> "$ENV_FILE"
 
