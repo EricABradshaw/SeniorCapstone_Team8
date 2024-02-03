@@ -106,13 +106,12 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 
 @app.route('/extract_hidden_image', methods=['POST'])
 def extract_hidden_image():
-    if 'stegoImage' not in request.files:
-        return jsonify({"error": "Stego image must be provided"}), 400
-    # Check for beta value sent from front end; default to 0.5 if not provided
+    # # Check for beta value sent from front end; default to 0.5 if not provided
     #beta = request.json.get('beta', 0.50)
     beta = 0.50
     print(f'BETA IS {beta}')
     
+    index = request.form.get('index', type=int, default=0)
     data = json.loads(request.data.decode('utf-8'))
     
     stegoImage = base64_to_image(data)
@@ -129,12 +128,12 @@ def extract_hidden_image():
         return jsonify({"error": "Invalid beta value. Details: " + str(e)}), 400
     print(f'BETA IS {beta}')
 
-    # Load the appropriate model based on the provided beta value
+    # # Load the appropriate model based on the provided beta value
     targetBetas = [0.25, 0.50, 0.75]
     closestBeta = min(targetBetas, key=lambda x: abs(x - beta))
     print(f'CLOSEST BETA IS {closestBeta}')
 
-    # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
+    # # Navigate to /Application/models/ and prepare models/folderIndex/ for loading
     cwd = os.path.dirname(os.path.abspath(__file__))
     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
     betaFolderName = f"b{closestBeta:.2f}"
@@ -148,17 +147,15 @@ def extract_hidden_image():
 
     # Load the model
     try:
-        model = tf.keras.models.load_model(inputModelPath)
+        #model = tf.keras.models.load_model(inputModelPath)
+        model = StegoModel()
+        model.load_weights(inputModelPath)
         
         # How we generated the Stego Image using the loaded model
-        extractedImage, _ = model.call((
-            np.expand_dims(stegoImage, axis=0),
-            np.expand_dims(stegoImage, axis=0)
-        ))
-        
-        # Limit the values to between 0 and 1
-        # Clean up the image so it's a proper PNG
-        extractedImage = extractedImage.squeeze()
+        extractedImage = model.extract((stegoImage))
+               
+        # Limit the values to between 0 and 1; clean up the image so it's a proper PNG
+        extractedImage = extractedImage.numpy().squeeze()
         extractedImage = np.clip(extractedImage, 0, 1)
         extractedImage = (extractedImage * 255).astype(np.uint8)
         
@@ -224,14 +221,20 @@ def create_stego_image():
     print(f'Attempting to load model from {inputModelPath}')
     # Load the model
     try:
-        model = tf.keras.models.load_model(inputModelPath)
+        #model = tf.keras.models.load_model(inputModelPath)
+        model = StegoModel()
+        model.load_weights(inputModelPath)
         
         # Preprocess the images 
         coverImagePreproc = preprocess_image(coverImage).astype(np.float32)
         secretImagePreproc = preprocess_image(secretImage).astype(np.float32)
         
         # Generate the Stego Image using the loaded model
-        _, stegoImage = model.call((
+        # _, stegoImage = model.call((
+        #     np.expand_dims(secretImagePreproc, axis=0),
+        #     np.expand_dims(coverImagePreproc, axis=0)
+        # ))
+        stegoImage = model.hide((
             np.expand_dims(secretImagePreproc, axis=0),
             np.expand_dims(coverImagePreproc, axis=0)
         ))

@@ -66,19 +66,19 @@ cd SeniorCapstone_Team8/Application/python
 
 ### Activate the virtual environment
 
-On Windows using Bash: 
+If you are on Windows using Bash: 
 ```
 py -3 -m venv .venv
 . .venv/Scripts/activate
 ```
 
-On Linux using Bash or equivalent:
+If you are on Linux using Bash or equivalent:
 ```
 python3 -m venv .venv
 source ./.venv/bin/activate
 ```
 
-On Windows using PowerShell or Command Prompt:
+If you are on Windows using PowerShell or Command Prompt:
 ```
 py -3 -m venv .venv
 .venv\Scripts\activate
@@ -107,7 +107,7 @@ FLASK_SERVER_URI="localhost:5000"
 
 ### Start the web app locally
 
-Finally, to start the web server:
+Finally, to start the web server on your local machine:
 ```
 npm run all
 ```

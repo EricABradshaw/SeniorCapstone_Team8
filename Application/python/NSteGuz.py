@@ -205,6 +205,33 @@ class StegoModel(tf.keras.Model):
         reveal_output = self.reveal_net_output(x)
 
         return reveal_output, hiding_output
+    
+    def hide(self, inputs):
+        secret_tensor, cover_tensor = inputs
+
+        # Prep network forward pass
+        x = secret_tensor
+        for layer in self.prep_net_layers:
+            x = layer(x)
+        prep_output = x
+
+        # Hiding network forward pass
+        x = tf.keras.layers.Concatenate(axis=3)([cover_tensor, prep_output])
+        for layer in self.hide_net_layers:
+            x = layer(x)
+        hiding_output = self.hide_net_output(x)
+        
+        return hiding_output
+    
+    def extract(self, inputs):
+        stego_image = inputs
+        
+        x = stego_image
+        for layer in self.reveal_net_layers:
+            x = layer(x)
+        reveal_output = self.reveal_net_output(x)
+
+        return reveal_output        
 
 
 model = StegoModel()
