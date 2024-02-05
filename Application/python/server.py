@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, Response, send_file
 from flask_cors import CORS
-import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 #from SteGuz import deploy_hide_image_op, deploy_reveal_image_op, sess, saver, preprocess_image, verbose

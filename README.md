@@ -100,7 +100,7 @@ npm i
 
 You will also need to create a file called `.env` in `/Application/` with the following contents:
 ```
-PORT=7000
+PORT=9000
 MONGO_URI="mongodb://127.0.0.1/<databasename>"
 FLASK_SERVER_URI="localhost:5000"
 ```
