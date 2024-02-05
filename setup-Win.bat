@@ -2,7 +2,7 @@
 
 cd Application/python
 py -3 -m venv .venv
-.\Application\python\.venv\Scripts\Activate.ps1
+. .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 cd ..
 cd ..\client
