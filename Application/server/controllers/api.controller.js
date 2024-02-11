@@ -12,9 +12,9 @@ const sendRequestsController = {
     try {
       const coverImageSource = req.body.coverImageData
       const secretImageSource = req.body.secretImageData
-      console.log(`Request received from ${req.get('origin')}`)
+      const modelType = req.body.sliderValue
       let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
-      let stego64String = await helperFunctions.sendToFlask(base64Strings)
+      let stego64String = await helperFunctions.sendToFlask(base64Strings, modelType)
       res.status(200).json({ stegoImage: stego64String })
     } catch (err) {
       console.log(err)
@@ -47,18 +47,18 @@ const helperFunctions = {
       const axiosResponseSecret = await axios.get(secretImageUrl, {responseType: 'arraybuffer'})
       pngStrings.coverString = await (await sharp(axiosResponseCover.data).toFormat('png').toBuffer()).toString('base64')
       pngStrings.secretString = await (await sharp(axiosResponseSecret.data).toFormat('png').toBuffer()).toString('base64')
-      console.log(pngStrings.coverString.slice(85, 105))
-      console.log(pngStrings.secretString.slice(85, 105))
+      // console.log(pngStrings.coverString.slice(85, 105))
+      // console.log(pngStrings.secretString.slice(85, 105))
     } catch (error) {
       console.error('Error:', error)
     }
     return pngStrings
   },
   // Sends the object containing two png buffers to Flask server
-  sendToFlask: async (data) => {
+  sendToFlask: async (data, model) => {
     try {
       let resData
-      await axios.post(FLASK_SERVER_URL + '/create_stego_image_b64', data, {
+      await axios.post(FLASK_SERVER_URL + '/create_stego_image_b64', {data: data, model: model}, {
         headers: {
           'Content-Type': 'application/json'
         }

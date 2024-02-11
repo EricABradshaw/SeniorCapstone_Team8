@@ -174,11 +174,17 @@ def create_stego_image():
     tf.enable_eager_execution()
     tf.compat.v1.enable_eager_execution()
     tf.config.run_functions_eagerly(True)
-    coverImageString = request.json.get('coverString', '')
-    secretImageString = request.json.get('secretString', '')
-        
+    data = request.json.get('data', {})
+    if data:
+      coverImageString = data.get('coverString', '')
+      secretImageString = data.get('secretString', '')
+
+    model = request.json.get('model', '')
     if Debug:
         print("Flask request received.")
+        
+    if model:
+      print(f'Selected model: {model}')
     
     if not coverImageString:
         return 'Error! No cover image provided', 500 
