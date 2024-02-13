@@ -9,6 +9,7 @@ from PIL import Image
 from skimage import img_as_float
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
+from NSteGuz import StegoModel
 
 def get_psnr(stegoImage, coverImage):
     return psnr(coverImage, stegoImage.squeeze())
@@ -17,6 +18,25 @@ def get_psnr(stegoImage, coverImage):
 def get_ssim(extractedImage, secretImage):
     return ssim(secretImage, extractedImage.squeeze(), multichannel=True)
 
+def get_metrics(coverImage, secretImage, stegoImage, model: StegoModel):
+  psnr = get_psnr(stegoImage, coverImage)  
+  stegoImageEx = np.expand_dims(stegoImage, axis=0) / 255.0
+  extracted_image = model.extract(stegoImageEx)
+  extracted_image = extracted_image.numpy().squeeze()
+  extracted_image = np.clip(extracted_image, 0, 1)
+  extracted_image = (extracted_image * 255).astype(np.uint8) 
+  
+  # extractedImageByteArray = io.BytesIO()
+  # Image.fromarray(extracted_image).save(extractedImageByteArray, format='PNG')
+  metric_ssim = ssim(secretImage, extracted_image.squeeze(), multichannel=True, win_size=223, channel_axis=2)  
+  print('__________________METRICS___________________\n\n'
+        f'\tSSIM: {metric_ssim}\n'
+        f'\tPSNR: {psnr}\n'
+        '____________________________________________\n')
+  
+  return metric_ssim, psnr
+  
+  
 
 def get_model_paths(directory):
     """

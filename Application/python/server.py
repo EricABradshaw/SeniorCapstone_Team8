@@ -22,7 +22,6 @@ import tensorflow as tf
 #     logging.getLogger('tensorflow').disabled = True
 #     import warnings
 #     warnings.filterwarnings('ignore')
-
 Debug = True
 
 app = Flask(__name__)
@@ -249,8 +248,14 @@ def create_stego_image():
         stegoImageByteArray = stegoImageByteArray.getvalue()
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
         
+        get_metrics(coverImage, secretImage, stegoImage, model)
+        
         # Return the stego image
-        return jsonify({"message":"Success", "stegoImage":stegoImageBase64}), 200
+        return jsonify({
+                        "message":"Success", 
+                        "stegoImage":stegoImageBase64,
+                        
+                        }), 200
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
       
