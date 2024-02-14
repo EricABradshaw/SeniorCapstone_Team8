@@ -89,7 +89,7 @@ const Extract = () => {
       <div id="mainSection">
         <div className="filler"></div>
         <div className="filler"></div>
-        <div id="stegoImageSection" onClick={handleStegoImageClick}>
+        <div className='borderImage hoverShadow' onClick={handleStegoImageClick}>
           {stegoImage ? (
             <img
               src={URL.createObjectURL(stegoImage)}
@@ -103,7 +103,7 @@ const Extract = () => {
         </div>
 
         <img src='./images/arrow.svg' height={200} width={200} alt='Arrow'></img>
-        <div id="secretImageSection">
+        <div className='borderImage hoverShadow'>
           {secretImage ? (
             <img
               src={secretImage}

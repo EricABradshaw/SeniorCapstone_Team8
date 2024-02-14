@@ -22,7 +22,6 @@ import tensorflow as tf
 #     logging.getLogger('tensorflow').disabled = True
 #     import warnings
 #     warnings.filterwarnings('ignore')
-
 Debug = True
 
 app = Flask(__name__)
@@ -36,7 +35,7 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
     
 #     if not request.files.getlist('coverImages[]'):
 #         return jsonify({"error": "No cover images provided"}), 400
-    
+
 #     secretImageFile = request.files['secretImage']
 #     secretImageString = io.BytesIO(secretImageFile.read())
 #     index = request.form.get('index', type=int, default=0)
@@ -252,8 +251,15 @@ def create_stego_image():
         stegoImageByteArray = stegoImageByteArray.getvalue()
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
         
+        ssim, psnr = get_metrics(coverImage, secretImage, stegoImage, model)
+        print(f'{ssim} {psnr}')
         # Return the stego image
-        return jsonify({"message":"Success", "stegoImage":stegoImageBase64}), 200
+        return jsonify({
+                        "message":"Success",
+                        "stegoImage":stegoImageBase64,
+                        "ssim": ssim,
+                        "psnr": psnr
+                        }), 200
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
       
