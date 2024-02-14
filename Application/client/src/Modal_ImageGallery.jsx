@@ -1,36 +1,35 @@
 import React, { useState } from 'react'
 import { GridGallery, getImages } from './GridGallery';
 
-const handleUploadClick = async () => {
-  try {
-    const selectedFile = await selectFile();
-    if (selectedFile) {
-      // setStegoImage(selectedFile);
-    }
-  } catch (error) {
-    console.error('Error selecting file:', error);
-  }
-};
-
-const selectFile = () => {
-  return new Promise((resolve) => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-
-    input.addEventListener('change', (event) => {
-      const selectedFile = event.target.files[0];
-      resolve(selectedFile);
-    });
-    input.click();
-  });
-};
-
 const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleCoverImageSelect }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const handleRefreshClick = () => {
     setRefreshKey((prevKey) => prevKey + 1)
   }
+  const handleUploadClick = async () => {
+    try {
+      const selectedFile = await selectFile();
+      if (selectedFile) {
+        // setStegoImage(selectedFile);
+      }
+    } catch (error) {
+      console.error('Error selecting file:', error);
+    }
+  };
+  
+  const selectFile = () => {
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+  
+      input.addEventListener('change', (event) => {
+        const selectedFile = event.target.files[0];
+        resolve(selectedFile);
+      });
+      input.click();
+    });
+  };
   // Callback function to be passed to GridGallery
   const handleImageSelect = (index, image) => {
     if (selectedItem === "coverImage")
