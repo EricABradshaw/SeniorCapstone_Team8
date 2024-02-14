@@ -35,7 +35,7 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
     
 #     if not request.files.getlist('coverImages[]'):
 #         return jsonify({"error": "No cover images provided"}), 400
-    
+
 #     secretImageFile = request.files['secretImage']
 #     secretImageString = io.BytesIO(secretImageFile.read())
 #     index = request.form.get('index', type=int, default=0)
@@ -180,6 +180,9 @@ def create_stego_image():
     
     if Debug:
         print("Flask request received.")
+        
+    if model:
+      print(f'Selected model: {model}')
     
     # Get cover/secret image
     if not coverImageString:

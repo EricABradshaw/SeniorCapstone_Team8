@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import Modal from './Modal_ImageGallery';
 import StegoMetrics from './StegoMetrics';
+import SliderControl from './SliderControl';
 import axios from 'axios'
 
 const Hide = () => {
@@ -13,6 +14,7 @@ const Hide = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [sliderValue, setSliderValue] = useState(3);
 
   const [stegoImage, setStegoImage] = useState(null);
   const [psnr, setPsnr] = useState(0);
@@ -95,6 +97,9 @@ const Hide = () => {
       setSsimScore(5)
       return 5
     }
+
+  const handleSliderChange = (value) => {
+    setSliderValue(value)
   }
 
   const handleHideButtonClicked = async () => {
@@ -102,7 +107,7 @@ const Hide = () => {
 
     if (coverImage && secretImage) {
       console.log("Sending request...")
-      await axios.post('http://localhost:9000/api/hide', { coverImageData, secretImageData })
+      await axios.post('http://localhost:9000/api/hide', { coverImageData, secretImageData, sliderValue })
         .then(response => {
           console.log(response)
           setStegoImage(`data:image/png;base64,${response.data.stegoImage.imageData}`)
@@ -174,12 +179,19 @@ const Hide = () => {
         </div>
         <div className="filler"></div>
       </div>
+      <div id='sliderContainer'>
+        <SliderControl onSliderChange={handleSliderChange} />
+      </div>
       <div id='submitButtonSection'>
         <button id='submitButton' onClick={handleHideButtonClicked}>
           {processing ? 'Processing...' : 'Hide!'}
         </button>
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} selectedItem={selectedItem} handleCoverImageSelect={handleCoverImageSelect} handleSecretImageSelect={handleSecretImageSelect} />
+      <Modal isOpen={isModalOpen} 
+             onClose={handleCloseModal} 
+             selectedItem={selectedItem} 
+             handleCoverImageSelect={handleCoverImageSelect} 
+             handleSecretImageSelect={handleSecretImageSelect} />
     </div>
   );
 }
