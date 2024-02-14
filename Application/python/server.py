@@ -181,8 +181,8 @@ def create_stego_image():
     if Debug:
         print("Flask request received.")
         
-    if model:
-      print(f'Selected model: {model}')
+    # if model:
+    #   print(f'Selected model: {model}')
     
     # Get cover/secret image
     if not coverImageString:

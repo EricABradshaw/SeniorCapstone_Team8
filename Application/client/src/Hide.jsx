@@ -97,6 +97,7 @@ const Hide = () => {
       setSsimScore(5)
       return 5
     }
+  }
 
   const handleSliderChange = (value) => {
     setSliderValue(value)
