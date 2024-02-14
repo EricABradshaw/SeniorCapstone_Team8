@@ -5,10 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import base64
 import io 
+import csv
 from PIL import Image
 from skimage import img_as_float
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
+from skimage.metrics import mean_squared_error as mse
 from NSteGuz import StegoModel
 
 def get_psnr(stegoImage, coverImage):
@@ -19,7 +21,7 @@ def get_ssim(extractedImage, secretImage):
     return ssim(secretImage, extractedImage.squeeze(), multichannel=True)
 
 def get_metrics(coverImage, secretImage, stegoImage, model: StegoModel):
-  psnr = get_psnr(stegoImage, coverImage)  
+  psnr = round(get_psnr(stegoImage, coverImage), 7)
   stegoImageEx = np.expand_dims(stegoImage, axis=0) / 255.0
   extracted_image = model.extract(stegoImageEx)
   extracted_image = extracted_image.numpy().squeeze()
@@ -28,11 +30,19 @@ def get_metrics(coverImage, secretImage, stegoImage, model: StegoModel):
   
   # extractedImageByteArray = io.BytesIO()
   # Image.fromarray(extracted_image).save(extractedImageByteArray, format='PNG')
-  metric_ssim = ssim(secretImage, extracted_image.squeeze(), multichannel=True, win_size=223, channel_axis=2)  
+  metric_ssim = round(ssim(secretImage, extracted_image.squeeze(), multichannel=True, win_size=223, channel_axis=2), 7)
+  stego_mse = round(mse(coverImage, stegoImage), 7)
+  extracted_mse = round(mse(secretImage, extracted_image), 7)
   print('__________________METRICS___________________\n\n'
         f'\tSSIM: {metric_ssim}\n'
         f'\tPSNR: {psnr}\n'
+        f'\t MSE: {stego_mse}  (cover vs stego)\n'
+        f'\t MSE: {extracted_mse} (secret vs extracted)\n'
         '____________________________________________\n')
+  csv_data = [metric_ssim, psnr, stego_mse, extracted_mse]
+  with open('metricOutput.csv', 'a', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(csv_data)
   
   return metric_ssim, psnr
   

@@ -57,7 +57,7 @@ const helperFunctions = {
   // Sends the object containing two png buffers to Flask server
   sendToFlask: async (data) => {
     try {
-      let resData
+      let imageData
       await axios.post(FLASK_SERVER_URL + '/create_stego_image_b64', data, {
         headers: {
           'Content-Type': 'application/json'
@@ -65,7 +65,16 @@ const helperFunctions = {
       })
         .then(async response => {
           console.log('Success:',response.status)
-          resData = await response.data.stegoImage
+          returnedData = await response.data
+          imageData = returnedData.stegoImage
+          ssim = returnedData.ssim
+          psnr = returnedData.psnr
+          console.log(`${returnedData.ssim} ${returnedData.psnr}`)
+          resData = {
+            "imageData": imageData,
+            "ssim": ssim,
+            "psnr": psnr
+          }
         })
 
         return resData

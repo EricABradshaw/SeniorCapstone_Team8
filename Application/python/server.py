@@ -248,13 +248,14 @@ def create_stego_image():
         stegoImageByteArray = stegoImageByteArray.getvalue()
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
         
-        get_metrics(coverImage, secretImage, stegoImage, model)
-        
+        ssim, psnr = get_metrics(coverImage, secretImage, stegoImage, model)
+        print(f'{ssim} {psnr}')
         # Return the stego image
         return jsonify({
-                        "message":"Success", 
+                        "message":"Success",
                         "stegoImage":stegoImageBase64,
-                        
+                        "ssim": ssim,
+                        "psnr": psnr
                         }), 200
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
