@@ -175,7 +175,7 @@ def create_stego_image():
     coverImageString = request.json.get('coverString', '')
     secretImageString = request.json.get('secretString', '')
     # Check for beta value sent from front end; default to 0.5 if not provided
-    beta = request.json.get('beta', 0.50)
+    beta = request.json.get('beta', 0.50)/100
     print(f'BETA IS {beta}')
     
     if Debug:
@@ -206,6 +206,7 @@ def create_stego_image():
     # Load the appropriate model based on the provided beta value
     targetBetas = [0.25, 0.50, 0.75]
     closestBeta = min(targetBetas, key=lambda x: abs(x - beta))
+    
     #print(f'CLOSEST BETA IS {closestBeta}')
 
     cwd = os.path.dirname(os.path.abspath(__file__))
@@ -215,7 +216,7 @@ def create_stego_image():
     
     modelFolder = glob.glob(os.path.join(modelsDir, betaFolderName + "*"))
     if not modelFolder:
-        return jsonify({"error": f"No model found for beta value: {beta}"}), 404
+        return jsonify({"error": f"No model found for beta value: {closestBeta}"}), 404
     #print(f'MODEL FOLDER SELECTED IS {modelFolder}')
     inputModelPath = modelFolder[0]
     
