@@ -57,6 +57,7 @@ const helperFunctions = {
   // Sends the object containing two png buffers to Flask server
   sendToFlask: async (data, model) => {
     try {
+      data.beta = model;
       let imageData
       await axios.post(FLASK_SERVER_URL + '/create_stego_image_b64', data, {
         headers: {

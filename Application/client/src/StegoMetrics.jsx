@@ -4,7 +4,6 @@ const StegoImage = (props) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = () => {
-    console.log(isVisible)
     setIsVisible(!isVisible)
   }
 

@@ -157,14 +157,8 @@ const Hide = () => {
         </div>
         <img src='/images/equals_sign.svg' height={200} width={200} alt='Equals Sign'></img>
         <div id="stegoImageContainer">
-          {stegoImage ? (
-            <div>
-              <StegoMetrics score={score} psnr={psnr} psnrScore={psnrScore} ssim={ssim} ssimScore={ssimScore}/>
-            </div>
-          ) : (
-            <></>
-          )}
-          <div id="stegoImageSection" className='borderImage'>
+          
+          <div id="stegoImageSection" className='borderImage hoverShadow'>
             {stegoImage ? (
                 <img
                   src={stegoImage}
@@ -177,6 +171,13 @@ const Hide = () => {
               )}
               
           </div>
+          {stegoImage ? (
+            <div>
+              <StegoMetrics score={score} psnr={psnr} psnrScore={psnrScore} ssim={ssim} ssimScore={ssimScore}/>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="filler"></div>
       </div>
