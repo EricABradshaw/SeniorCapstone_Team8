@@ -115,8 +115,6 @@ def extract_hidden_image():
     stegoImage = stegoImage[:, :, :, :3]
     stegoImage = stegoImage / 255.0
     
-    print(f'BETA IS {beta}')
-
     # Assign/validate beta value
     try:
         beta = float(beta)
