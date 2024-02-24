@@ -8,7 +8,9 @@ const sendRequestsController = {
   hideSend: async (req, res) => {
     try {
       const coverImageSource = req.body.coverImageData
-      const secretImageSource = req.body.secretImageData
+      console.log(coverImageSource)
+      const secretImageSource = req.body.textDataUrl
+      console.log(secretImageSource)
       const modelType = req.body.sliderValue
       let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
       let stego64String = await helperFunctions.sendToFlask(base64Strings, modelType)
@@ -29,6 +31,19 @@ const sendRequestsController = {
     } catch (error) {
       console.log('Error: ' + error)
     }
+  },
+  hideTextSend: async (req, res) => {
+    try {
+      const coverImageSource = req.body.coverImageData
+      const secretBase64 = req.body.textDataUrl
+      let strings = fetchAndConvertOne(coverImageSource)
+      strings.secretString = secretBase64
+      const modelType = req.body.sliderValue
+      let stego64String = await helperFunctions.sendToFlask(strings, modelType)
+      res.status(200).json({ stegoImage: stego64String})
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
@@ -44,6 +59,16 @@ const helperFunctions = {
       const axiosResponseSecret = await axios.get(secretImageUrl, {responseType: 'arraybuffer'})
       pngStrings.coverString = await (await sharp(axiosResponseCover.data).toFormat('png').toBuffer()).toString('base64')
       pngStrings.secretString = await (await sharp(axiosResponseSecret.data).toFormat('png').toBuffer()).toString('base64')
+    } catch (error) {
+      console.error('Error:', error)
+    }
+    return pngStrings
+  },
+  fetchAndConvertOne: async (imageUrl) => {
+    let pngStrings = {}
+    try {
+      const axiosResponseCover = await axios.get(imageUrl, {responseType: 'arraybuffer'})
+      pngStrings.coverString = await (await sharp(axiosResponseCover.data).toFormat('png').toBuffer()).toString('base64')
     } catch (error) {
       console.error('Error:', error)
     }

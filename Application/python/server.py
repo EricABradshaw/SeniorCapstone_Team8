@@ -172,6 +172,7 @@ def extract_hidden_image():
 def create_stego_image():
     coverImageString = request.json.get('coverString', '')
     secretImageString = request.json.get('secretString', '')
+    
     # Check for beta value sent from front end; default to 0.5 if not provided
     beta = request.json.get('beta', 0.50)/100
     print(f'BETA IS {beta}')
@@ -183,11 +184,11 @@ def create_stego_image():
     #   print(f'Selected model: {model}')
     
     # Get cover/secret image
-    if not coverImageString:
-        return 'Error! No cover image provided', 500 
+    # if not coverImageString:
+    #     return 'Error! No cover image provided', 500 
         
-    if not secretImageString:
-        return 'Error! No secret image provided', 500 
+    # if not secretImageString:
+    #     return 'Error! No secret image provided', 500 
     
     coverImage = base64_to_image(coverImageString)
     secretImage = base64_to_image(secretImageString)

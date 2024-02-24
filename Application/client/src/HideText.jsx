@@ -4,9 +4,12 @@ import StegoMetrics from './StegoMetrics';
 import SliderControl from './SliderControl';
 import axios from 'axios'
 
-const Hide = () => {
+const { createCanvas, loadImage } = require('canvas')
+
+const HideText = () => {
   const coverImageRef = useRef(null)
   const secretImageRef = useRef(null)
+  const textRef = useRef(null)
 
   const [coverImage, setCoverImage] = useState(null);
   const [coverImageData, setCoverImageData] = useState(null)
@@ -109,16 +112,38 @@ const Hide = () => {
   const handleHideButtonClicked = async () => {
     setProcessing(true)
 
-    if (coverImage && secretImage) {
+    const text = textRef.current.value
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = 224
+    canvas.height = 224
+
+    ctx.fillStyle = 'black'
+    ctx.fillText(text, 10, 50)
+
+    const textDataUrl = canvas.toDataURL('image/png')
+    console.log(coverImageData)
+
+    const secretData = {
+      "data":
+      {
+        "textDataUrl":textDataUrl
+      }
+    }
+
+    console.log(textDataUrl)
+
+
+    if (coverImage && textDataUrl) {
       console.log("Sending request...")
-      await axios.post('http://localhost:9000/api/hide', { coverImageData, secretImageData, sliderValue })
+      await axios.post('http://localhost:9000/api/hideText', { coverImageData, textDataUrl, sliderValue })
         .then(response => {
-          console.log(response)
+          //console.log(response)
           setStegoImage(`data:image/png;base64,${response.data.stegoImage.imageData}`)
           setPsnr(response.data.stegoImage.psnr)
           setSsim(response.data.stegoImage.ssim)
           handleRatings(response.data.stegoImage.ssim, response.data.stegoImage.psnr)
-          console.log(`${response.data.stegoImage.ssim} ${response.data.stegoImage.psnr}`)
+          //console.log(`${response.data.stegoImage.ssim} ${response.data.stegoImage.psnr}`)
           setProcessing(false)
         })
         .catch(error => {
@@ -129,21 +154,11 @@ const Hide = () => {
 
   return (
     <div>
-      <h2 className='pageHead'>Image-in-Image Steganography</h2>
+      <h2 className='pageHead'>Text-in-Image Steganography</h2>
       <div id="mainSection">
         <div className="filler"></div>
-        <div id="secretImageSection" className='hoverShadow borderImage' onClick={() => handleItemClick("secretImage")}>
-          {secretImage ? (
-            <img
-              ref={secretImageRef}
-              src={secretImage.src}
-              alt={secretImage.alt || ''}
-              width={secretImage.width}
-              height={secretImage.height}
-            />
-          ) : (
-            <h1>Secret Image</h1>
-          )}
+        <div>
+          <textarea ref={textRef} rows="4" style={{"resize":"vertical", "fontSize":20}}></textarea>
         </div>
         <img src='/images/plus_sign.svg' height={200} width={200} alt='Plus Sign'></img>
         <div id="coverImageSection" className='hoverShadow borderImage' onClick={() => handleItemClick("coverImage")}>
@@ -202,4 +217,4 @@ const Hide = () => {
   );
 }
 
-export default Hide;
+export default HideText;
