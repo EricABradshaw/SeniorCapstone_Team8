@@ -129,6 +129,20 @@ def base64_to_image(base64String):
     imgData = base64.b64decode(base64String)
     image = Image.open(io.BytesIO(imgData))
     return np.array(image)
+  
+def base64_to_image_beta(base64String):
+  """
+  Decodes a base64 string into as a NumPy array.
+  
+  base64String: a Stego Image encoded as a base64 string.
+  
+  Returns: the decoded string as a NumPy array.
+  """
+  imgData = base64.b64decode(base64String)
+  image = Image.open(io.BytesIO(imgData))
+  beta = image.info.get("beta")
+  print(f'beta isssssss::::: {beta}')
+  return np.array(image), beta
 
 
 def image_to_base64(imageArray):
