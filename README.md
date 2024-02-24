@@ -26,10 +26,6 @@ node.js gives us the package manager `npm` and is also the main back-end for our
 
 Download and install it from [here](https://nodejs.org/en/download/current).
 
-### MongoDB
-
-MongoDB is required for the database utilized by this web application. Download and install it from [here](https://www.mongodb.com/try/download/community).
-
 ## Quick Setup
 
 Install the dependencies as described above.
@@ -50,6 +46,12 @@ cd SeniorCapstone_Team8
 ./setup-Linux.sh
 cd Application
 npm run all
+```
+
+You should also create a file called `.env` under `/Application` with the following contents:
+```
+PORT=9000
+FLASK_SERVER_URI="localhost:5000"
 ```
 
 The server should automatically run in the Python virtual environment. Your terminal does not need to be in the virtual environment when calling `npm run all`.

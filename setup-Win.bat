@@ -14,12 +14,4 @@ npm i
 REM create a .env file
 SET ENV_FILE=Application\.env
 
-IF NOT EXIST "%ENV_FILE%" (
-    echo PORT=9000 > "%ENV_FILE%"
-    echo MONGO_URI="mongodb://127.0.0.1/capstone" >> "%ENV_FILE%"
-    echo FLASK_SERVER_URI="localhost:5000" >> "%ENV_FILE%"
-
-    echo .env file created in Application
-) ELSE (
-    echo .env file already exists in Application
-)
+echo Don't forget to create a .env file in /Application/
