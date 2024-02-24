@@ -83,6 +83,5 @@ const helperFunctions = {
 
 module.exports = {
   sendRequestsController,
-  userController,
   helperFunctions
 }
