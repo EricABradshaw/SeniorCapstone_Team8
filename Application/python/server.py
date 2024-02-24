@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, Response, send_file
 from flask_cors import CORS
 import numpy as np
 from PIL import Image
+from PIL.PngImagePlugin import PngInfo
 #from SteGuz import deploy_hide_image_op, deploy_reveal_image_op, sess, saver, preprocess_image, verbose
 #import NSteGuz
 from NSteGuz import StegoModel
@@ -105,17 +106,16 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:9000"]}})
 @app.route('/extract_hidden_image', methods=['POST'])
 def extract_hidden_image():
     # # Check for beta value sent from front end; default to 0.5 if not provided
-    #beta = request.json.get('beta', 0.50)
-    beta = 0.50
-    print(f'BETA IS {beta}')
+    #beta = request.json.get('beta', 0.50)    
     
-    index = request.form.get('index', type=int, default=0)
     data = json.loads(request.data.decode('utf-8'))
     
-    stegoImage = base64_to_image(data)
+    stegoImage, beta = base64_to_image_beta(data)
     stegoImage = np.expand_dims(stegoImage, axis=0)
     stegoImage = stegoImage[:, :, :, :3]
     stegoImage = stegoImage / 255.0
+    
+    print(f'BETA IS {beta}')
 
     # Assign/validate beta value
     try:
@@ -246,14 +246,21 @@ def create_stego_image():
         stegoImage = np.clip(stegoImage, 0, 1)
         stegoImage = (stegoImage * 255).astype(np.uint8)
         
-        # Now convert it into a byte stream then base64
+        # Now convert it into a byte stream
         stegoImageByteArray = io.BytesIO()
-        Image.fromarray(stegoImage).save(stegoImageByteArray, format='PNG')
+        
+        # Add metadata
+        metadata = PngInfo()
+        metadata.add_text("beta", str(closestBeta))
+        Image.fromarray(stegoImage).save(stegoImageByteArray, format='PNG', pnginfo=metadata)
         stegoImageByteArray = stegoImageByteArray.getvalue()
+                
+        # Now convert to base64
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
         
+        # Get metrics
         ssim, psnr = get_metrics(coverImage, secretImage, stegoImage, model)
-        print(f'{ssim} {psnr}')
+        
         # Return the stego image
         return jsonify({
                         "message":"Success",
