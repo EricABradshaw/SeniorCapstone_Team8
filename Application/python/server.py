@@ -172,10 +172,11 @@ def extract_hidden_image():
 def create_stego_image():
     coverImageString = request.json.get('coverString', '')
     secretImageString = request.json.get('secretString', '')
+    print(1)
     # Check for beta value sent from front end; default to 0.5 if not provided
     beta = request.json.get('beta', 0.50)/100
     print(f'BETA IS {beta}')
-    
+    print(2)
     if Debug:
         print("Flask request received.")
         
@@ -188,10 +189,10 @@ def create_stego_image():
         
     if not secretImageString:
         return 'Error! No secret image provided', 500 
-    
+    print(3)
     coverImage = base64_to_image(coverImageString)
     secretImage = base64_to_image(secretImageString)
-    
+    print(4)
     # Assign/validate beta value
     try:
         beta = float(beta)
@@ -200,7 +201,7 @@ def create_stego_image():
     except ValueError as e:
         return jsonify({"error": "Invalid beta value. Details: " + str(e)}), 400
     #print(f'BETA IS {beta}')
-
+    print(5)
     # Load the appropriate model based on the provided beta value
     targetBetas = [0.25, 0.50, 0.75]
     closestBeta = min(targetBetas, key=lambda x: abs(x - beta))
@@ -217,18 +218,18 @@ def create_stego_image():
         return jsonify({"error": f"No model found for beta value: {closestBeta}"}), 404
     #print(f'MODEL FOLDER SELECTED IS {modelFolder}')
     inputModelPath = modelFolder[0]
-    
+    print(6)
     print(f'Attempting to load model from {inputModelPath}')
     # Load the model
     try:
         #model = tf.keras.models.load_model(inputModelPath)
         model = StegoModel()
         model.load_weights(inputModelPath)
-        
+        print(7)
         # Preprocess the images 
         coverImagePreproc = preprocess_image(coverImage).astype(np.float32)
         secretImagePreproc = preprocess_image(secretImage).astype(np.float32)
-        
+        print(8)
         # Generate the Stego Image using the loaded model
         # _, stegoImage = model.call((
         #     np.expand_dims(secretImagePreproc, axis=0),
@@ -238,27 +239,27 @@ def create_stego_image():
             np.expand_dims(secretImagePreproc, axis=0),
             np.expand_dims(coverImagePreproc, axis=0)
         ))
-        
+        print(9)
         # Clean up the image so it's a proper PNG
         stegoImage = stegoImage.numpy().squeeze()
         stegoImage = np.clip(stegoImage, 0, 1)
         stegoImage = (stegoImage * 255).astype(np.uint8)
-        
+        print(10)
         # Now convert it into a byte stream
         stegoImageByteArray = io.BytesIO()
-        
+        print(11)
         # Add metadata
         metadata = PngInfo()
         metadata.add_text("beta", str(closestBeta))
         Image.fromarray(stegoImage).save(stegoImageByteArray, format='PNG', pnginfo=metadata)
         stegoImageByteArray = stegoImageByteArray.getvalue()
-                
+        print(12)
         # Now convert to base64
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
-        
+        print(13)
         # Get metrics
         ssim, psnr = get_metrics(coverImage, secretImage, stegoImage, model)
-        
+        print(14)
         # Return the stego image
         return jsonify({
                         "message":"Success",
