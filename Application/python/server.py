@@ -68,11 +68,11 @@ def extract_hidden_image():
 def create_stego_image():
     coverImageString = request.json.get('coverString', '')
     secretImageString = request.json.get('secretString', '')
-    
+
     # Check for beta value sent from front end; default to 0.5 if not provided
     beta = request.json.get('beta', 0.50)/100
     print(f'BETA IS {beta}')
-    
+    print(2)
     if Debug:
         print('Flask request received.')
     
@@ -82,10 +82,10 @@ def create_stego_image():
         
     if not secretImageString:
         return 'Error! No secret image provided', 500 
-    
+    print(3)
     coverImage = base64_to_image(coverImageString)
     secretImage = base64_to_image(secretImageString)
-    
+    print(4)
     # Assign/validate beta value
     try:
         if not (0 <= float(beta) <= 1):
@@ -96,7 +96,6 @@ def create_stego_image():
     modelFolder, closestBeta = get_appropriate_model_path_and_closest_beta(beta)
     print(f'modelFolder is {modelFolder}')
     print(f'closestBeta is {closestBeta}')
-    
     # Load the model
     try:
         print(f'Attempting to load model from {modelFolder}')
@@ -106,33 +105,27 @@ def create_stego_image():
         # Preprocess the images 
         coverImagePreproc = preprocess_image(coverImage).astype(np.float32)
         secretImagePreproc = preprocess_image(secretImage).astype(np.float32)
-        
+        print(8)
         # Generate the Stego Image using the loaded model
         stegoImage = model.hide((
             np.expand_dims(secretImagePreproc, axis=0),
             np.expand_dims(coverImagePreproc, axis=0)
-        ))
-        
+        ))     
         # Clean up the image so it's a proper PNG in RGB format
         stegoImage = stegoImage.numpy().squeeze()
         stegoImage = np.clip(stegoImage, 0, 1)
         stegoImage = (stegoImage * 255).astype(np.uint8)
-        
         # Now convert it into a byte stream
         stegoImageByteArray = io.BytesIO()
-        
         # Add metadata
         metadata = PngInfo()
         metadata.add_text("beta", str(closestBeta))
         Image.fromarray(stegoImage).save(stegoImageByteArray, format='PNG', pnginfo=metadata)
         stegoImageByteArray = stegoImageByteArray.getvalue()
-                
         # Now convert to base64
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
-        
         # Get metrics
         ssim, psnr = get_metrics(coverImage, secretImage, stegoImage, model)
-        
         # Return the stego image
         return jsonify({
                         "message":"Success",
