@@ -184,11 +184,11 @@ def create_stego_image():
     #   print(f'Selected model: {model}')
     
     # Get cover/secret image
-    # if not coverImageString:
-    #     return 'Error! No cover image provided', 500 
+    if not coverImageString:
+        return 'Error! No cover image provided', 500 
         
-    # if not secretImageString:
-    #     return 'Error! No secret image provided', 500 
+    if not secretImageString:
+        return 'Error! No secret image provided', 500 
     print(3)
     coverImage = base64_to_image(coverImageString)
     secretImage = base64_to_image(secretImageString)

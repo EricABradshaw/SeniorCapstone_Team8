@@ -118,18 +118,18 @@ const HideText = () => {
     canvas.width = 224
     canvas.height = 224
 
+    ctx.fillStyle = 'gray'
+    ctx.fillRect(0,0,canvas.width, canvas.height)
+
     ctx.fillStyle = 'black'
-    ctx.fillText(text, 10, 50)
+    ctx.font = '30px arial'
 
-    const textDataUrl = canvas.toDataURL('image/png')
-    console.log(coverImageData)
+    wrapText(ctx, text, 10, 40, 220, 20)
 
-    const secretData = {
-      "data":
-      {
-        "textDataUrl":textDataUrl
-      }
-    }
+    let textDataUrl = canvas.toDataURL('image/png')
+    const paddingLength = textDataUrl.length % 4
+    textDataUrl += '='.repeat(paddingLength)
+    textDataUrl = textDataUrl.split(';base64,').pop()
 
     console.log(textDataUrl)
 
@@ -215,6 +215,26 @@ const HideText = () => {
              handleSecretImageSelect={handleSecretImageSelect} />
     </div>
   );
+}
+
+const wrapText = (ctx, text, x, y, maxW, lineHeight) => {
+  let words = text.split(' ')
+  let line = ''
+
+  for (let i = 0; i < words.length; i++) {
+    let testLine = line + words[i] + ' '
+    let metrics = ctx.measureText(testLine)
+    let testWidth = metrics.width
+
+    if (testWidth > maxW && i > 0) {
+      ctx.fillText(line, x, y)
+      line = words[i] + ' '
+      y += lineHeight
+    } else {
+      line = testLine
+    }
+  }
+  ctx.fillText(line, x, y)
 }
 
 export default HideText;

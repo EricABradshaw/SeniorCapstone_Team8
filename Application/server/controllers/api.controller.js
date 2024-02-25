@@ -9,7 +9,7 @@ const sendRequestsController = {
     try {
       const coverImageSource = req.body.coverImageData
       console.log(coverImageSource)
-      const secretImageSource = req.body.textDataUrl
+      const secretImageSource = req.body.secretImageData
       console.log(secretImageSource)
       const modelType = req.body.sliderValue
       let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
@@ -36,7 +36,7 @@ const sendRequestsController = {
     try {
       const coverImageSource = req.body.coverImageData
       const secretBase64 = req.body.textDataUrl
-      let strings = fetchAndConvertOne(coverImageSource)
+      let strings = await helperFunctions.fetchAndConvertOne(coverImageSource)
       strings.secretString = secretBase64
       const modelType = req.body.sliderValue
       let stego64String = await helperFunctions.sendToFlask(strings, modelType)
