@@ -7,7 +7,7 @@ import base64
 import io 
 import csv
 from PIL import Image
-from skimage import img_as_float
+from skimage import img_as_float, transform
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error as mse
@@ -21,6 +21,10 @@ def get_ssim(extractedImage, secretImage):
     return ssim(secretImage, extractedImage.squeeze(), multichannel=True)
 
 def get_metrics(coverImage, secretImage, stegoImage, model: StegoModel):
+    if secretImage.shape != coverImage.shape:
+        secretImage = secretImage[:,:,:3]
+        print(coverImage.shape)
+        print(secretImage.shape)
     print('a')
     psnr = round(get_psnr(stegoImage, coverImage), 7)
     stegoImageEx = np.expand_dims(stegoImage, axis=0) / 255.0
@@ -31,13 +35,13 @@ def get_metrics(coverImage, secretImage, stegoImage, model: StegoModel):
     print('b')
     # extractedImageByteArray = io.BytesIO()
     # Image.fromarray(extracted_image).save(extractedImageByteArray, format='PNG')
-    # metric_ssim = round(ssim(secretImage, extracted_image.squeeze(), multichannel=True, win_size=223, channel_axis=2), 7)
-    metric_ssim = .99
+    metric_ssim = round(ssim(secretImage, extracted_image.squeeze(), multichannel=True, win_size=223, channel_axis=2), 7)
+    #metric_ssim = .99
     print('b1')
     stego_mse = round(mse(coverImage, stegoImage), 7)
     print('b2')
-    # extracted_mse = round(mse(secretImage, extracted_image), 7)
-    extracted_mse = 100
+    extracted_mse = round(mse(secretImage, extracted_image), 7)
+    # extracted_mse = 100
     print('c')
     print('__________________METRICS___________________\n\n'
             f'\tSSIM: {metric_ssim}\n'
