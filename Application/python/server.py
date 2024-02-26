@@ -22,7 +22,8 @@ def extract_hidden_image():
     stegoImage = np.expand_dims(stegoImage, axis=0)
     stegoImage = stegoImage[:, :, :, :3]
     stegoImage = stegoImage / 255.0
-    
+    if beta is None:
+        beta = .75
     # Assign/validate beta value from stegoImage header
     try:
         if not (0 <= float(beta) <= 1):

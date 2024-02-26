@@ -38,7 +38,6 @@ const About = () => {
         <div className='about-section'>
           <h2>PSNR</h2>
           <h4>What is it?</h4>
-
         </div>
       </div>
     </>
