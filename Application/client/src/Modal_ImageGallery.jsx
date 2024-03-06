@@ -1,16 +1,24 @@
 import React, { useState } from 'react'
-import { GridGallery, getImages } from './GridGallery';
+import { GridGallery } from './GridGallery';
 
 const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleCoverImageSelect }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const handleRefreshClick = () => {
     setRefreshKey((prevKey) => prevKey + 1)
   }
-  const handleUploadClick = async () => {
+
+ const handleUploadClick = async () => {
     try {
       const selectedFile = await selectFile();
       if (selectedFile) {
-        // setStegoImage(selectedFile);
+        let base64String = await fileToBase64(selectedFile, 224, 224);
+        const img = {
+          src: base64String,
+          height: 224,
+          width: 224,
+        }
+        
+        handleImageSelect(0, img);
       }
     } catch (error) {
       console.error('Error selecting file:', error);
@@ -30,6 +38,27 @@ const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleC
       input.click();
     });
   };
+
+  const fileToBase64 = (file, maxWidth, maxHeight) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = maxWidth;
+          canvas.height = maxHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, maxWidth, maxHeight);
+          resolve(canvas.toDataURL('image/jpeg')); 
+        };
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   // Callback function to be passed to GridGallery
   const handleImageSelect = (index, image) => {
     if (selectedItem === "coverImage")
