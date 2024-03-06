@@ -1,28 +1,24 @@
 import React from 'react';
 import { Gallery } from "react-grid-gallery";
-import axios from 'axios'
 
-const NUM_IMAGES_REQUEST_FROM_API = 20;
+const NUM_IMAGES_REQUEST_FROM_API = 33;
 
-async function getImages(numberOfImages) {
+function getImages(numberOfImages) {
   const apiUrl = 'https://picsum.photos/224/224';
-  return new Promise( async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     if (!Number.isInteger(numberOfImages) || numberOfImages <= 0) {
-      return Promise.reject(new Error('Invalid number of images'));
+      return reject(new Error('Invalid number of images'));
     }
     // Make a request to the image API
     const imagePromises = [];
-  
-    const response = await axios.get(`${apiUrl}`)
-    const imageId = parseInt(response.headers['picsum-id'])
 
     for (let i = 0; i < numberOfImages; i++) {
-      imagePromises.push(imageId + i);
+      imagePromises.push(fetch(`${apiUrl}?random=${i}`).then(response => response.blob()));
     }
 
     Promise.all(imagePromises)
-      .then(imageUrls => {
-        resolve(imageUrls);
+      .then(blobs => {
+        resolve(blobs);
       })
       .catch(error => {
         reject(error);
@@ -45,23 +41,31 @@ class GridGallery extends React.Component {
 
   loadImages = () => {
     getImages(NUM_IMAGES_REQUEST_FROM_API)
-    .then(data => {
-      // Assuming data is an array of image objects with URLs
-      let image_array = []
-
-      data.forEach(element => {
-        let source = `https://picsum.photos/id/${element}/224`
-        image_array.push({
-          src: source,
-          width: 224,
-          height: 224,
-        });
-      });
-
-      this.setState({ images: image_array });
+    .then(blobs => Promise.all(blobs.map(blob => this.blobToBase64(blob))))
+    .then(base64Images => {
+      const imageArray = base64Images.map(base64data => ({
+        src: base64data,
+        width: 224,
+        height: 224,
+      }));
+      this.setState({ images: imageArray });
     })
     .catch(error => {
       console.error(error.message);
+    });
+  }
+
+  blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = function() {
+        const base64data = reader.result;
+        resolve(base64data);
+      }
+      reader.onerror = function(error) {
+        reject(error);
+      };
     });
   }
 
@@ -73,11 +77,8 @@ class GridGallery extends React.Component {
   };
 
   render() {
-
-    return <Gallery images={this.state.images}
-      onClick={this.handleImageSelect} />
+    return <Gallery images={this.state.images} onClick={this.handleImageSelect} />
   }
-
 }
 
 export { GridGallery, getImages };
