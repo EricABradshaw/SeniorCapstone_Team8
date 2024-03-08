@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 
+const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
+
 const Extract = () => {
   const [stegoImage, setStegoImage] = useState(null);
   const [secretImage, setSecretImage] = useState(null);
@@ -39,7 +41,7 @@ const Extract = () => {
         const formData = new FormData();
         formData.append('stegoImage', stegoImage);
   
-        const response = await axios.post('http://localhost:9000/api/extract', formData);
+        const response = await axios.post(`${serverURL}/api/extract`, formData);
   
         // Assuming the response contains the extracted secretImageData as base64
         const secretImageData = response.data.stegoImageData;
@@ -93,12 +95,12 @@ const Extract = () => {
           {stegoImage ? (
             <img
               src={URL.createObjectURL(stegoImage)}
-              alt="Stego Image"
+              alt="Stego"
               height={224}
               width={224}
             />
           ) : (
-            <h1>Stego-Image</h1>
+            <h1>Stego Image</h1>
           )}
         </div>
 
@@ -107,7 +109,7 @@ const Extract = () => {
           {secretImage ? (
             <img
               src={secretImage}
-              alt="Secret Image"
+              alt="Secret"
               height={224}
               width={224}
             />

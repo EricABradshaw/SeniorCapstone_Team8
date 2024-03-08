@@ -52,9 +52,7 @@ const sendRequestsController = {
       const secretBase64 = req.body.secretImage
       const sliderValue = req.body.sliderValue
 
-      let strings = await helperFunctions.fetchAndConvertOne('https://picsum.photos/224/224')
-      strings.secretString = secretBase64
-
+      let strings = await helperFunctions.fetchAndConvert('https://picsum.photos/224/224', secretBase64)
       let stego64String = await helperFunctions.sendToFlask(strings, sliderValue)
 
       res.status(200).json({ stegoImage: stego64String })

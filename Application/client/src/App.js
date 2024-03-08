@@ -7,6 +7,7 @@ import Hide from './Hide';
 import Extract from './Extract';
 import About from './About'
 import HideText from './HideText'
+import Recommend from './Recommend';
 
 function App() {
   const [isComponentAVisible, setComponentAVisible] = useState(true);
@@ -23,6 +24,8 @@ function App() {
     pageContent = isComponentAVisible ? <Hide /> : <Extract />
   } else if (currentPage === 'text') {
     pageContent = <HideText />
+  } else if (currentPage === 'recommend') {
+    pageContent = <Recommend />
   }
 
   //Callback function to decide which Elements are visible either hiding or extraction
@@ -35,6 +38,7 @@ function App() {
       <span id="app-header">
         <h1>StegoSource.net</h1>
         <button onClick={() => navigate('about')}>About</button>
+        <button onClick={()=> navigate('recommend')}>Recommend Page</button>
         {currentPage === 'main' ? (
           <button onClick={() => navigate('text')}>Hide Text</button>
         ) : (
