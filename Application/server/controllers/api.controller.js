@@ -19,6 +19,7 @@ const sendRequestsController = {
       console.log(err)
     }
   },
+
   extractSend: async (base64) => {
     try {
       const response = await axios.post(FLASK_SERVER_URL + '/extract_hidden_image', base64, {
@@ -32,6 +33,7 @@ const sendRequestsController = {
       console.log('Error: ' + error)
     }
   },
+
   hideTextSend: async (req, res) => {
     try {
       const coverImageSource = req.body.coverImageData
@@ -41,6 +43,16 @@ const sendRequestsController = {
       const modelType = req.body.sliderValue
       let stego64String = await helperFunctions.sendToFlask(strings, modelType)
       res.status(200).json({ stegoImage: stego64String})
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
+  recommendation: async (req, res) => {
+    try {
+      const secretBase64 = req.body.secretImage64
+
+
     } catch (error) {
       console.log(error)
     }
@@ -103,8 +115,9 @@ const helperFunctions = {
       console.error(err)
     }
   }
-
 }
+
+
 
 module.exports = {
   sendRequestsController,
