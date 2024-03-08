@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 
 const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
+const NUMBER_OF_RECOMMENDATIONS = 20;
 
 const Recommend = () => {
   const [secretImage, setSecretImage] = useState(null);
@@ -59,8 +60,9 @@ const Recommend = () => {
   
     if (secretImage) {
       try {
+
         // Create an array with the same request body repeated n times
-        const requestURLs = Array.from({ length: 50 }, () => `${serverURL}/api/recommendation`);
+        const requestURLs = Array.from({ length: NUMBER_OF_RECOMMENDATIONS }, () => `${serverURL}/api/recommendation`);
         // Make concurrent POST requests using Axios
         const sliderValue = 75;
         const responses = await Promise.all(requestURLs.map(url => axios.post(url, {secretImage, sliderValue})));
@@ -70,7 +72,7 @@ const Recommend = () => {
             src: `data:image/png;base64,${response.data.stegoImage.imageData}`, 
           }
         });
-        
+
         setImageUrls(imageUrls)
         setProcessing(false);
       } catch (error) {
