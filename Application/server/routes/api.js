@@ -32,6 +32,7 @@ router.post('/extract', upload.single('stegoImage'), async (req, res) => {
   res.json({ stegoImageData: answer });
 })
 
+// URI: /api/recommendation
 router.post('/recommendation', controller.sendRequestsController.recommendation)
 
 module.exports = router
