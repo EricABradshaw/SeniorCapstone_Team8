@@ -8,9 +8,8 @@ const sendRequestsController = {
   hideSend: async (req, res) => {
     try {
       const coverImageSource = req.body.coverImageData
-      console.log(coverImageSource)
       const secretImageSource = req.body.secretImageData
-      console.log(secretImageSource)
+
       const modelType = req.body.sliderValue
       let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
       let stego64String = await helperFunctions.sendToFlask(base64Strings, modelType)
@@ -50,9 +49,13 @@ const sendRequestsController = {
 
   recommendation: async (req, res) => {
     try {
-      const secretBase64 = req.body.secretImage64
+      const secretBase64 = req.body.secretImage
+      const sliderValue = req.body.sliderValue
 
+      let strings = await helperFunctions.fetchAndConvert('https://picsum.photos/224/224', secretBase64)
+      let stego64String = await helperFunctions.sendToFlask(strings, sliderValue)
 
+      res.status(200).json({ stegoImage: stego64String })
     } catch (error) {
       console.log(error)
     }
@@ -86,7 +89,7 @@ const helperFunctions = {
     }
     return pngStrings
   },
-  // Sends the object containing two png buffers to Flask server
+  // Sends the object containing two png buffers to Flask server and the slider value as 'model'
   sendToFlask: async (data, model) => {
     try {
       data.beta = model;

@@ -3,12 +3,10 @@ import Modal from './Modal_ImageGallery';
 import StegoMetrics from './StegoMetrics';
 import SliderControl from './SliderControl';
 import axios from 'axios'
-
-const { createCanvas, loadImage } = require('canvas')
+const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
 
 const HideText = () => {
   const coverImageRef = useRef(null)
-  const secretImageRef = useRef(null)
   const textRef = useRef(null)
 
   const [coverImage, setCoverImage] = useState(null);
@@ -136,14 +134,12 @@ const HideText = () => {
 
     if (coverImage && textDataUrl) {
       console.log("Sending request...")
-      await axios.post('http://localhost:9000/api/hideText', { coverImageData, textDataUrl, sliderValue })
+      await axios.post(`${serverURL}/api/hideText`, { coverImageData, textDataUrl, sliderValue })
         .then(response => {
-          //console.log(response)
           setStegoImage(`data:image/png;base64,${response.data.stegoImage.imageData}`)
           setPsnr(response.data.stegoImage.psnr)
           setSsim(response.data.stegoImage.ssim)
           handleRatings(response.data.stegoImage.ssim, response.data.stegoImage.psnr)
-          //console.log(`${response.data.stegoImage.ssim} ${response.data.stegoImage.psnr}`)
           setProcessing(false)
         })
         .catch(error => {

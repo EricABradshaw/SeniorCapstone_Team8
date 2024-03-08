@@ -107,6 +107,11 @@ MONGO_URI="mongodb://127.0.0.1/<databasename>"
 FLASK_SERVER_URI="localhost:5000"
 ```
 
+And a file called `.env` in `/Application/client` with the following contents:
+```env
+REACT_APP_NODE_SERVER_URI="http://localhost:9000"
+```
+
 ### Start the web app locally
 
 Finally, to start the web server on your local machine:

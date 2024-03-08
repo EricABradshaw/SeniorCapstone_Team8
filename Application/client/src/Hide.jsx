@@ -4,6 +4,8 @@ import StegoMetrics from './StegoMetrics';
 import SliderControl from './SliderControl';
 import axios from 'axios'
 
+const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
+
 const Hide = () => {
   const coverImageRef = useRef(null)
   const secretImageRef = useRef(null)
@@ -111,7 +113,7 @@ const Hide = () => {
 
     if (coverImage && secretImage) {
       console.log("Sending request...")
-      await axios.post('http://localhost:9000/api/hide', { coverImageData, secretImageData, sliderValue })
+      await axios.post(`${serverURL}/api/hide`, { coverImageData, secretImageData, sliderValue })
         .then(response => {
           console.log(response)
           setStegoImage(`data:image/png;base64,${response.data.stegoImage.imageData}`)
