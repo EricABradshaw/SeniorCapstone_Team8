@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import SliderControl from './SliderControl'; 
 
 const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
 const NUMBER_OF_RECOMMENDATIONS = 20;
@@ -8,6 +9,7 @@ const Recommend = () => {
   const [secretImage, setSecretImage] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [imageUrls, setImageUrls] = useState([]);
+  const [sliderValue, setSliderValue] = useState(50);
 
   const handleSecretImageClick = async () => {
     try {
@@ -21,6 +23,10 @@ const Recommend = () => {
     }
   };
 
+const handleSliderChange = (value) => {
+  setSliderValue(value);
+};
+  
   const selectFile = () => {
     return new Promise((resolve) => {
       const input = document.createElement('input');
@@ -64,7 +70,7 @@ const Recommend = () => {
         // Create an array with the same request body repeated n times
         const requestURLs = Array.from({ length: NUMBER_OF_RECOMMENDATIONS }, () => `${serverURL}/api/recommendation`);
         // Make concurrent POST requests using Axios
-        const sliderValue = 75;
+        //const sliderValue = 75;
         const responses = await Promise.all(requestURLs.map(url => axios.post(url, {secretImage, sliderValue})));
         // Extract data from each response and do something with it
         const imageUrls = responses.map(response => {
@@ -85,7 +91,7 @@ const Recommend = () => {
 
   return (
     <div>
-      <div id="mainSection">
+      <div id="mainSection" style={{ position: 'sticky', top: '110px', right: '0px', zIndex: 1 }}>
         <div className="filler"></div>
         <div className="filler"></div>
         <div className='borderImage hoverShadow' onClick={handleSecretImageClick}>
@@ -97,25 +103,31 @@ const Recommend = () => {
               width={224}
             />
           ) : (
-            <h1>Secret-Image</h1>
+            <h1>Secret Image</h1>
           )}
         </div>
-
         <div className="filler"></div>
         <div className="filler"></div>
       </div>
-      <div id='submitButtonSection'>
+      
+
+      <div style={{ display: 'flex', marginTop: '32px', marginRight: '24px', marginLeft: '680px', position: 'fixed', zIndex: 1 }}>
+      <SliderControl onSliderChange={(value) => setSliderValue(value)} />
+      </div>
+      <div id='submitButtonSection' style={{ position: 'fixed', top: '400px', zIndex: 1 }}>
         <button id='submitButton' onClick={handleRecommendButtonClicked}>
           {processing ? 'Processing...' : 'Recommend!'}
         </button>
       </div>
-      <div>
+      
+      <div style={{ marginTop: '220px', position: 'relative', zIndex: 2 }}>
         {imageUrls.map((imageUrl, index) => (
           <img src={imageUrl.src} alt={`Image ${index}`} height={224} width={224} />
         ))}
       </div>
     </div>
   );
+  
 };
 
 export default Recommend;
