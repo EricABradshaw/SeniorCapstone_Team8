@@ -35,7 +35,7 @@ function App() {
   }
 
   return (
-    <div className="App bg-dark container-fluid p-0" style={{height:'100vh', width:'100vw'}}>
+    <div className="App bg-dark container-fluid p-0" style={{height:'100%', minHeight:'100vh', overflow:'hidden'}}>
       <div className='mx-auto p-2 row w-100 bg-black border-bottom'> 
         <h1 id='title' className='w-25 py-3 px-5'>StegoSource.net</h1>
         <Dropdown className="col-12 d-block d-sm-none">
@@ -51,11 +51,11 @@ function App() {
           </Dropdown.Menu>
         </Dropdown>
         <div className='d-none d-sm-flex w-100 justify-content-around row m-auto'>
-          <Button id='aboutBtn' className={`col-xs-12 col-md-3 col-lg-2 custom-button ${activeButton === "about" ? 'active' : ''}`} onClick={() => navigate('about')}>About</Button>
-          <Button id='hideBtn' className={`col-xs-12 col-md-3 col-lg-2 custom-button ${activeButton === "main" ? 'active' : ''}`} onClick={() => navigate('main')}>Hide Images</Button>
-          <Button id='textBtn' className={`col-xs-12 col-md-3 col-lg-2 custom-button ${activeButton === "text" ? 'active' : ''}`} onClick={() => navigate('text')}>Hide Text</Button>
-          <Button id='extractBtn' className={`col-xs-12 col-md-3 col-lg-2 custom-button ${activeButton === "extract" ? 'active' : ''}`} onClick={() => navigate('extract')}>Extract</Button>
-          <Button id='recommendBtn' className={`col-xs-12 col-md-6 col-lg-2 custom-button ${activeButton === "recommend" ? 'active' : ''}`} onClick={() => navigate('recommend')}>Recommend</Button>
+          <Button id='aboutBtn' className={`col-sm-6 col-md-3 col-lg-2 custom-button ${activeButton === "about" ? 'active' : ''}`} onClick={() => navigate('about')}>About</Button>
+          <Button id='hideBtn' className={`col-sm-6 col-md-3 col-lg-2 custom-button ${activeButton === "main" ? 'active' : ''}`} onClick={() => navigate('main')}>Hide Images</Button>
+          <Button id='textBtn' className={`col-sm-6 col-md-3 col-lg-2 custom-button ${activeButton === "text" ? 'active' : ''}`} onClick={() => navigate('text')}>Hide Text</Button>
+          <Button id='extractBtn' className={`col-sm-6 col-md-3 col-lg-2 custom-button ${activeButton === "extract" ? 'active' : ''}`} onClick={() => navigate('extract')}>Extract</Button>
+          <Button id='recommendBtn' className={`col-sm-6 col-md-6 col-lg-2 custom-button ${activeButton === "recommend" ? 'active' : ''}`} onClick={() => navigate('recommend')}>Recommend</Button>
         </div>
       </div>
       <div>
