@@ -4,17 +4,40 @@ $tusk: #c4bfc0;
 $black: #000;
 $gold: #cfb991;
 $summit: #daaa00;
+$clay: #8e6f3e;
+$fog: #9d9795;
 
-#title {
+.custom-text-light {
     color: $gold !important;
+}
+
+.custom-text {
+    color: $summit !important;
+}
+
+.custom-text-clay {
+    color: $clay !important;
+}
+
+.custom-text-fog {
+    color: $fog !important;
+}
+
+.custom-bg-dark {
+    background-color: $footprints !important;
+}
+
+.custom-bg-darker {
+    background-color: $black !important;
 }
 
 .custom-button {
     background-color: $storm !important;
-    border: 2px solid black !important;
-    .custom-button:hover {
-        background: $storm !important;
-    }
+    border: 2px solid $fog !important;
+}
+
+.custom-button:hover {
+    background-color: $footprints !important;
 }
 
 .custom-button.active {

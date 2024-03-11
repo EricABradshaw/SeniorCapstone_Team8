@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import {Button} from 'react-bootstrap';
 
 const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
 const NUMBER_OF_RECOMMENDATIONS = 20;
@@ -84,34 +85,29 @@ const Recommend = () => {
   };
 
   return (
-    <div>
-      <div id="mainSection">
-        <div className="filler"></div>
-        <div className="filler"></div>
+    <div className='row w-100 d-flex m-auto'>
+      <div id="mainSection" className='col'>
         <div className='borderImage hoverShadow' onClick={handleSecretImageClick}>
           {secretImage ? (
             <img
               src={secretImage}
-              alt="Secret Image"
+              alt="Secret"
               height={224}
               width={224}
             />
           ) : (
-            <h1>Secret-Image</h1>
+            <h3>Secret Image</h3>
           )}
         </div>
-
-        <div className="filler"></div>
-        <div className="filler"></div>
       </div>
-      <div id='submitButtonSection'>
-        <button id='submitButton' onClick={handleRecommendButtonClicked}>
+      <div className='col-12 d-flex justify-content-center my-3 p-0'>
+        <Button className='custom-button' onClick={handleRecommendButtonClicked}>
           {processing ? 'Processing...' : 'Recommend!'}
-        </button>
+        </Button>
       </div>
       <div>
         {imageUrls.map((imageUrl, index) => (
-          <img src={imageUrl.src} alt={`Image ${index}`} height={224} width={224} />
+          <img src={imageUrl.src} alt={`Im${index}`} height={224} width={224} />
         ))}
       </div>
     </div>
