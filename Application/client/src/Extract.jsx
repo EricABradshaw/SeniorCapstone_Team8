@@ -91,8 +91,8 @@ const Extract = () => {
     <div className='row'>
       <h2 className='col-12 custom-text-light mx-3 mt-1'>Extraction</h2>
       <div className='row m-0 p-0 w-75 d-flex m-auto justify-content-around'>
-        <div id="mainSection" className='row justify-content-around mx-auto align-middle'>
-          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3' onClick={handleStegoImageClick}>
+        <div id="mainSection" className='row w-75 justify-content-around mx-auto align-middle'>
+          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-3 p-0 my-3' onClick={handleStegoImageClick}>
             {stegoImage ? (
               <img
                 src={URL.createObjectURL(stegoImage)}
@@ -105,8 +105,8 @@ const Extract = () => {
             )}
           </div>
 
-          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' style={{maxHeight:'15vh'}} src='./images/arrow.svg' height={200} width={200} alt='Arrow'></img>
-          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3'>
+          <img className='col-12 col-sm-6 col-md-3 col-lg-2 p-0 my-auto' style={{maxHeight:'15vh'}} src='./images/arrow.svg' height={200} width={200} alt='Arrow'></img>
+          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-3 p-0 my-3'>
             {secretImage ? (
               <img
                 src={secretImage}

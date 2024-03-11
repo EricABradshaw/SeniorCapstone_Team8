@@ -122,9 +122,6 @@ const HideText = () => {
     textDataUrl += '='.repeat(paddingLength)
     textDataUrl = textDataUrl.split(';base64,').pop()
 
-    console.log(textDataUrl)
-
-
     if (coverImage && textDataUrl) {
       console.log("Sending request...")
       await axios.post(`${serverURL}/api/hideText`, { coverImageData, textDataUrl, sliderValue })
@@ -146,7 +143,7 @@ const HideText = () => {
       <h2 className='col-12 custom-text-light mx-3 mt-1'>Text-in-Image Steganography</h2>
       <div className='row m-0 p-0 w-75 d-flex m-auto justify-content-around'>
         <div id="mainSection" className='row justify-content-around mx-auto align-middle'>
-          <div className='col-12 col-md-4 col-lg-2 p-0 my-3'>
+          <div className='col-12 col-md-4 col-lg-3 p-0 my-3'>
             <textarea ref={textRef} rows="4" style={{"resize":"vertical", "fontSize":20}}></textarea>
           </div>
           <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' style={{maxHeight:'15vh'}} src='/images/plus_sign.svg' height={200} width={200} alt='Plus Sign'></img>

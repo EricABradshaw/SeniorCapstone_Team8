@@ -44,3 +44,14 @@ $fog: #9d9795;
     background: $footprints !important;
     color: $summit !important;
 }
+
+#about * {
+    color: $black !important;
+}
+#about {
+    .about-section {
+        outline: 4px solid white;
+        border: 1px solid $footprints;
+        background-color: $fog !important;
+    }
+}
