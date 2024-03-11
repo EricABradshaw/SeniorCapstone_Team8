@@ -31,7 +31,7 @@ Download and install it from [here](https://nodejs.org/en/download/current).
 Install the dependencies as described above.
 
 If you are running Bash on a Windows machine:
-```
+```bash
 git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
 cd SeniorCapstone_Team8
 ./setup-Win.sh
@@ -40,7 +40,7 @@ npm run all
 ```
 
 If you are running Bash on a Linux machine:
-```
+```bash
 git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
 cd SeniorCapstone_Team8
 ./setup-Linux.sh
@@ -49,9 +49,14 @@ npm run all
 ```
 
 You should also create a file called `.env` under `/Application` with the following contents:
-```
+```env
 PORT=9000
 FLASK_SERVER_URI="localhost:5000"
+```
+
+And create another a file called `.env` in `/Application/client` with the following contents:
+```env
+REACT_APP_NODE_SERVER_URI="http://localhost:9000"
 ```
 
 The server should automatically run in the Python virtual environment. Your terminal does not need to be in the virtual environment when calling `npm run all`.
@@ -61,7 +66,7 @@ The server should automatically run in the Python virtual environment. Your term
 ### Clone this repository
 
 In any terminal:
-```
+```bash
 git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
 cd SeniorCapstone_Team8/Application/python
 ```
@@ -69,19 +74,19 @@ cd SeniorCapstone_Team8/Application/python
 ### Activate the virtual environment
 
 If you are on Windows using Bash: 
-```
+```bash
 py -3 -m venv .venv
 . .venv/Scripts/activate
 ```
 
 If you are on Linux using Bash or equivalent:
-```
+```bash
 python3 -m venv .venv
 source ./.venv/bin/activate
 ```
 
 If you are on Windows using PowerShell or Command Prompt:
-```
+```powershell
 py -3 -m venv .venv
 .venv\Scripts\activate
 ```
@@ -90,7 +95,7 @@ You will know you're in the virtual environment when all commands output by your
 ### Install npm Packages and Python Dependencies
 
 In any terminal with the Python virtual environment active:
-```
+```bash
 pip install -r requirements.txt
 cd ..
 cd client
@@ -103,7 +108,6 @@ npm i
 You will also need to create a file called `.env` in `/Application/` with the following contents:
 ```
 PORT=9000
-MONGO_URI="mongodb://127.0.0.1/<databasename>"
 FLASK_SERVER_URI="localhost:5000"
 ```
 
@@ -114,7 +118,7 @@ REACT_APP_NODE_SERVER_URI="http://localhost:9000"
 
 ### Start the web app locally
 
-Finally, to start the web server on your local machine:
-```
+Finally, to start the web server on your local machine from the `/Application/` folder:
+```bash
 npm run all
 ```
