@@ -3,6 +3,8 @@ import Modal from './Modal_ImageGallery';
 import StegoMetrics from './StegoMetrics';
 import SliderControl from './SliderControl';
 import axios from 'axios'
+import {Button} from 'react-bootstrap'
+
 const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
 
 const HideText = () => {
@@ -11,9 +13,6 @@ const HideText = () => {
 
   const [coverImage, setCoverImage] = useState(null);
   const [coverImageData, setCoverImageData] = useState(null)
-
-  const [secretImage, setSecretImage] = useState(null);
-  const [secretImageData, setSecretImageData] = useState(null)
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -33,12 +32,6 @@ const HideText = () => {
     setCoverImage(image);
     setCoverImageData(image.src)
   };
-
-  const handleSecretImageSelect = (image) => {
-    console.log('Secret Image:', image);
-    setSecretImage(image);
-    setSecretImageData(image.src)
-  }
 
   const handleItemClick = (item) => {
     setSelectedItem(item);
@@ -149,31 +142,29 @@ const HideText = () => {
   }
 
   return (
-    <div>
-      <h2 className='pageHead'>Text-in-Image Steganography</h2>
-      <div id="mainSection">
-        <div className="filler"></div>
-        <div>
-          <textarea ref={textRef} rows="4" style={{"resize":"vertical", "fontSize":20}}></textarea>
-        </div>
-        <img src='/images/plus_sign.svg' height={200} width={200} alt='Plus Sign'></img>
-        <div id="coverImageSection" className='hoverShadow borderImage' onClick={() => handleItemClick("coverImage")}>
-          {coverImage ? (
-            <img
-              ref={coverImageRef}
-              src={coverImage.src}
-              alt={coverImage.alt || ''}
-              width={coverImage.width}
-              height={coverImage.height}
-            />
-          ) : (
-            <h1>Cover Image</h1>
-          )}
-        </div>
-        <img src='/images/equals_sign.svg' height={200} width={200} alt='Equals Sign'></img>
-        <div id="stegoImageContainer">
-          
-          <div id="stegoImageSection" className='borderImage hoverShadow'>
+    <div className='row'>
+      <h2 className='col-12 custom-text-light mx-3 mt-1'>Text-in-Image Steganography</h2>
+      <div className='row m-0 p-0 w-75 d-flex m-auto justify-content-around'>
+        <div id="mainSection" className='row justify-content-around mx-auto align-middle'>
+          <div className='col-12 col-md-4 col-lg-2 p-0 my-3'>
+            <textarea ref={textRef} rows="4" style={{"resize":"vertical", "fontSize":20}}></textarea>
+          </div>
+          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' src='/images/plus_sign.svg' height={200} width={200} alt='Plus Sign'></img>
+          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3' onClick={() => handleItemClick("coverImage")}>
+            {coverImage ? (
+              <img
+                ref={coverImageRef}
+                src={coverImage.src}
+                alt={coverImage.alt || ''}
+                width={coverImage.width}
+                height={coverImage.height}
+              />
+            ) : (
+              <h3>Cover Image</h3>
+            )}
+          </div>
+          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' src='/images/equals_sign.svg' height={200} width={200} alt='Equals Sign'></img>
+          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3'>
             {stegoImage ? (
                 <img
                   src={stegoImage}
@@ -182,34 +173,31 @@ const HideText = () => {
                   height={coverImage.height}
                 />
               ) : (
-                <h1>Stego Image</h1>
+                <h3>Stego Image</h3>
               )}
-              
           </div>
-          {stegoImage ? (
-            <div>
+          <div className={`col-3 col-md-3 col-lg-2 p-0 ${stegoImage ? 'd-block' : 'd-none'}`}>
+            {stegoImage ? (
               <StegoMetrics score={score} psnr={psnr} psnrScore={psnrScore} ssim={ssim} ssimScore={ssimScore}/>
-            </div>
-          ) : (
-            <></>
-          )}
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
-        <div className="filler"></div>
+        <div className='row col-12 d-flex justify-content-around my-4'>
+          <div className='col-12 col-md-4 w-75 d-md-flex justify-content-around'>
+            <SliderControl onSliderChange={handleSliderChange} />
+          </div>
+          <Button className={`custom-button col-12 col-md-4 d-flex justify-content-center aligned-button`} onClick={handleHideButtonClicked}>
+            {processing ? 'Processing...' : 'Hide!'}
+          </Button>
+        </div>
+        <Modal isOpen={isModalOpen} 
+              onClose={handleCloseModal} 
+              selectedItem={selectedItem} 
+              handleCoverImageSelect={handleCoverImageSelect} />
       </div>
-      <div id='sliderContainer'>
-        <SliderControl onSliderChange={handleSliderChange} />
-      </div>
-      <div id='submitButtonSection'>
-        <button id='submitButton' onClick={handleHideButtonClicked}>
-          {processing ? 'Processing...' : 'Hide!'}
-        </button>
-      </div>
-      <Modal isOpen={isModalOpen} 
-             onClose={handleCloseModal} 
-             selectedItem={selectedItem} 
-             handleCoverImageSelect={handleCoverImageSelect} 
-             handleSecretImageSelect={handleSecretImageSelect} />
-    </div>
+    </div> 
   );
 }
 
