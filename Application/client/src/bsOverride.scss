@@ -1,0 +1,23 @@
+$footprints: #555960;
+$storm: #6f727b;
+$tusk: #c4bfc0;
+$black: #000;
+$gold: #cfb991;
+$summit: #daaa00;
+
+#title {
+    color: $gold !important;
+}
+
+.custom-button {
+    background-color: $storm !important;
+    border: 2px solid black !important;
+    .custom-button:hover {
+        background: $storm !important;
+    }
+}
+
+.custom-button.active {
+    background: $footprints !important;
+    color: $summit !important;
+}
