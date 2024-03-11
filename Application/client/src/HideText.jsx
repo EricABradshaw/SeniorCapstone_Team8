@@ -149,7 +149,7 @@ const HideText = () => {
           <div className='col-12 col-md-4 col-lg-2 p-0 my-3'>
             <textarea ref={textRef} rows="4" style={{"resize":"vertical", "fontSize":20}}></textarea>
           </div>
-          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' src='/images/plus_sign.svg' height={200} width={200} alt='Plus Sign'></img>
+          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' style={{maxHeight:'15vh'}} src='/images/plus_sign.svg' height={200} width={200} alt='Plus Sign'></img>
           <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3' onClick={() => handleItemClick("coverImage")}>
             {coverImage ? (
               <img
@@ -163,7 +163,7 @@ const HideText = () => {
               <h3>Cover Image</h3>
             )}
           </div>
-          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' src='/images/equals_sign.svg' height={200} width={200} alt='Equals Sign'></img>
+          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' style={{maxHeight:'15vh'}} src='/images/equals_sign.svg' height={200} width={200} alt='Equals Sign'></img>
           <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3'>
             {stegoImage ? (
                 <img

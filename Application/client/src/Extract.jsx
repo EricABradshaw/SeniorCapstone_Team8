@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { Button } from 'react-bootstrap'
 
 const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
 
@@ -87,43 +88,42 @@ const Extract = () => {
   
 
   return (
-    <div>
-      <div id="mainSection">
-        <div className="filler"></div>
-        <div className="filler"></div>
-        <div className='borderImage hoverShadow' onClick={handleStegoImageClick}>
-          {stegoImage ? (
-            <img
-              src={URL.createObjectURL(stegoImage)}
-              alt="Stego"
-              height={224}
-              width={224}
-            />
-          ) : (
-            <h1>Stego Image</h1>
-          )}
-        </div>
+    <div className='row'>
+      <h2 className='col-12 custom-text-light mx-3 mt-1'>Extraction</h2>
+      <div className='row m-0 p-0 w-75 d-flex m-auto justify-content-around'>
+        <div id="mainSection" className='row justify-content-around mx-auto align-middle'>
+          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3' onClick={handleStegoImageClick}>
+            {stegoImage ? (
+              <img
+                src={URL.createObjectURL(stegoImage)}
+                alt="Stego"
+                height={224}
+                width={224}
+              />
+            ) : (
+              <h3>Stego Image</h3>
+            )}
+          </div>
 
-        <img src='./images/arrow.svg' height={200} width={200} alt='Arrow'></img>
-        <div className='borderImage hoverShadow'>
-          {secretImage ? (
-            <img
-              src={secretImage}
-              alt="Secret"
-              height={224}
-              width={224}
-            />
-          ) : (
-            <h1>Secret Image</h1>
-          )}
+          <img className='col-12 col-sm-6 col-md-3 col-lg-1 p-0 my-auto' style={{maxHeight:'15vh'}} src='./images/arrow.svg' height={200} width={200} alt='Arrow'></img>
+          <div className='hoverShadow borderImage col-12 col-md-4 col-lg-2 p-0 my-3'>
+            {secretImage ? (
+              <img
+                src={secretImage}
+                alt="Secret"
+                height={224}
+                width={224}
+              />
+            ) : (
+              <h3>Secret Image</h3>
+            )}
+          </div>
         </div>
-        <div className="filler"></div>
-        <div className="filler"></div>
-      </div>
-      <div id='submitButtonSection'>
-        <button id='submitButton' onClick={handleExtractButtonClicked}>
-          {processing ? 'Processing...' : 'Extract!'}
-        </button>
+        <div className='row col-12 d-flex justify-content-around my-4'>
+          <Button className={`custom-button col-12 col-md-4 d-flex justify-content-center aligned-button`} id='submitButton' onClick={handleExtractButtonClicked}>
+            {processing ? 'Processing...' : 'Extract!'}
+          </Button>
+        </div>
       </div>
     </div>
   );
