@@ -193,11 +193,14 @@ const starImages = {
           )}
         </div>
       </div>
-      <div className='col-12 d-flex justify-content-center my-3 p-0'>
-        <Button className='custom-button' onClick={handleRecommendButtonClicked}>
-          {processing ? 'Processing...' : 'Recommend!'}
-        </Button>
-      </div>
+      <div className='row col-12 d-flex justify-content-around my-4'>
+          <div className='col-12 col-md-4 w-75 d-md-flex justify-content-around'>
+            <SliderControl onSliderChange={handleSliderChange} />
+          </div>
+          <Button className={`custom-button col-12 col-md-4 d-flex justify-content-center aligned-button`} onClick={handleRecommendButtonClicked}>
+            {processing ? 'Processing...' : 'Recommend!'}
+          </Button>
+        </div>
       
       <div style={{ marginTop: '220px', position: 'relative', zIndex: 2 }}>
         {imageUrls.map((imageUrl, index) => (
