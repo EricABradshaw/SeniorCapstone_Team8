@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import {Button} from 'react-bootstrap';
 import SliderControl from './SliderControl'; 
 
 import oneStars from './img/1Stars.png';
@@ -7,7 +8,6 @@ import twoStars from './img/2Stars.png';
 import threeStars from './img/3Stars.png';
 import fourStars from './img/4Stars.png';
 import fiveStars from './img/5Stars.png';
-
 
 const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
 const NUMBER_OF_RECOMMENDATIONS = 20;
@@ -178,40 +178,34 @@ const starImages = {
   };
 
   return (
-    <div>
-      <div id="mainSection" style={{ position: 'sticky', top: '110px', right: '0px', zIndex: 1 }}>
-        <div className="filler"></div>
-        <div className="filler"></div>
+    <div className='row w-100 d-flex m-auto'>
+      <div id="mainSection" className='col'>
         <div className='borderImage hoverShadow' onClick={handleSecretImageClick}>
           {secretImage ? (
             <img
               src={secretImage}
-              alt="Secret Image"
+              alt="Secret"
               height={224}
               width={224}
             />
           ) : (
-            <h1>Secret Image</h1>
+            <h3>Secret Image</h3>
           )}
         </div>
-        <div className="filler"></div>
-        <div className="filler"></div>
       </div>
-      
-
-      <div style={{ display: 'flex', marginTop: '32px', marginRight: '24px', marginLeft: '680px', position: 'fixed', zIndex: 1 }}>
-      <SliderControl onSliderChange={(value) => setSliderValue(value)} />
-      </div>
-      <div id='submitButtonSection' style={{ position: 'fixed', top: '400px', zIndex: 1 }}>
-        <button id='submitButton' onClick={handleRecommendButtonClicked}>
-          {processing ? 'Processing...' : 'Recommend!'}
-        </button>
-      </div>
+      <div className='row col-12 d-flex justify-content-around my-4'>
+          <div className='col-12 col-md-4 w-75 d-md-flex justify-content-around'>
+            <SliderControl onSliderChange={handleSliderChange} />
+          </div>
+          <Button className={`custom-button col-12 col-md-4 d-flex justify-content-center aligned-button`} onClick={handleRecommendButtonClicked}>
+            {processing ? 'Processing...' : 'Recommend!'}
+          </Button>
+        </div>
       
       <div style={{ marginTop: '220px', position: 'relative', zIndex: 2 }}>
         {imageUrls.map((imageUrl, index) => (
           <div style={{ position: 'relative', display: 'inline-block', margin: '10px' }} key={index}>
-            <img src={imageUrl.src} alt={`Image ${index}`} height={224} width={224} />
+            <img src={imageUrl.src} alt={`Im${index}`} height={224} width={224} />
             <img 
               src={starImages[imageUrl.starRatingImage]}  
               alt={`Rating stars`} 

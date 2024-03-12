@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { GridGallery } from './GridGallery';
+import { Button } from 'react-bootstrap'
 
 const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleCoverImageSelect }) => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -13,9 +14,7 @@ const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleC
       if (selectedFile) {
         let base64String = await fileToBase64(selectedFile, 224, 224);
         const img = {
-          src: base64String,
-          height: 224,
-          width: 224,
+          src: base64String
         }
         
         handleImageSelect(0, img);
@@ -72,14 +71,14 @@ const Modal = ({ isOpen, onClose, selectedItem, handleSecretImageSelect, handleC
   return (
     <div key={refreshKey} className={`modal ${isOpen ? 'open' : ''}`} onClick={onClose}>
       <div className='overlay'></div>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content bg-transparent w-100 m-auto" onClick={(e) => e.stopPropagation()}>
         <div id="imageGallery">
           <GridGallery onSelect={handleImageSelect} />
         </div>
         <div style={{ marginTop: '20px'}}>
-          <button onClick={handleRefreshClick}>Refresh</button>
-          <button onClick={onClose} style={{ marginInlineStart: '10px', marginInlineEnd: '10px'}}>Close</button>
-          <button onClick={handleUploadClick}>Upload your own</button>
+          <Button className='custom-button' onClick={handleRefreshClick}>Refresh</Button>
+          <Button className='custom-button' onClick={onClose} style={{ marginInlineStart: '10px', marginInlineEnd: '10px'}}>Close</Button>
+          <Button className='custom-button' onClick={handleUploadClick}>Upload your own</Button>
         </div>
       </div>
     </div>

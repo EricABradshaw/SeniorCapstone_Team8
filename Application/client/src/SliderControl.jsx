@@ -7,19 +7,20 @@ const SliderControl = ({ onSliderChange }) => {
   }
 
   return (
-    <div id='sliderContents' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <h4 className='sliderText' style={{ marginRight: '20px' }}>Better Extracted Image</h4>
-      <div id='innerSlider' style={{ flex: 1 }}>
+    <div className='row d-flex align-center w-100 my-5'>
+      <h4 className='col-4 justify-content-end d-none d-md-flex custom-text-light'>Better Extracted Image</h4>
+      <h4 className='col-12 d-flex d-md-none custom-text'>Beta Value</h4>
+      <div className='col-12 col-md-4'>
         <input
           type='range'
           id='betaSlider'
           min={1}
           max={100}
           onChange={handleSliderChange}
-          style={{ width: '100%' }} // Ensure the slider takes the full width of its container
+          className='w-100'
         />
       </div>
-      <h4 className='sliderText' style={{ marginLeft: '20px' }}>Better StegoImage</h4>
+      <h4 className='col-4 justify-content-start d-none d-md-flex custom-text-light'>Better StegoImage</h4>
     </div>
   )
 }
