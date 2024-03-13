@@ -45,6 +45,18 @@ $fog: #9d9795;
     color: $summit !important;
 }
 
+.hover-hide {
+    transition: opacity 0.1s ease;
+    position: absolute;
+    right: 1px;
+    width: auto;
+    height: auto;
+    opacity: 0.8;
+}
+.hover-hide:hover {
+    opacity: 0;
+}
+
 #about * {
     color: $black !important;
 }

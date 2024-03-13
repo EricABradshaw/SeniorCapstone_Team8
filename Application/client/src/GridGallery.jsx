@@ -1,7 +1,7 @@
 import React from 'react';
 import { Gallery } from "react-grid-gallery";
 
-const NUM_IMAGES_REQUEST_FROM_API = 16;
+const NUM_IMAGES_REQUEST_FROM_API = 33;
 
 function getImages(numberOfImages) {
   const apiUrl = 'https://picsum.photos/224/224';
