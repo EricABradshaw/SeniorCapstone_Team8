@@ -179,6 +179,18 @@ const starImages = {
 
   return (
     <div className='row w-100 d-flex m-auto'>
+      <div className={`${processing ? 'd-none' : 'd-block'} border`}>
+        {imageUrls.map((imageUrl, index) => (
+          <div className='position-relative d-inline-block m-1' key={index}>
+            <img src={imageUrl.src} alt={`Im${index}`} />
+            <img 
+              src={starImages[imageUrl.starRatingImage]}  
+              alt={`Rating stars`} 
+              className={'hover-hide'}
+            />
+          </div>
+        ))}
+      </div>
       <div id="mainSection" className='col'>
         <div className='borderImage hoverShadow' onClick={handleSecretImageClick}>
           {secretImage ? (
@@ -201,20 +213,6 @@ const starImages = {
             {processing ? 'Processing...' : 'Recommend!'}
           </Button>
         </div>
-      
-      <div style={{ marginTop: '220px', position: 'relative', zIndex: 2 }}>
-        {imageUrls.map((imageUrl, index) => (
-          <div style={{ position: 'relative', display: 'inline-block', margin: '10px' }} key={index}>
-            <img src={imageUrl.src} alt={`Im${index}`} height={224} width={224} />
-            <img 
-              src={starImages[imageUrl.starRatingImage]}  
-              alt={`Rating stars`} 
-              style={{ position: 'absolute', right: '1px', width: 'auto', height: 'auto', opacity: '0.8' }} 
-            />
-          </div>
-        ))}
-      </div>
-
     </div>
   );
   
