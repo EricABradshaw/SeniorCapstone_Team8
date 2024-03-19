@@ -242,6 +242,8 @@ button.active {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;  
+  overflow: auto;
+  height: auto;
   gap: 20px;
   height: 100vh;
   margin: 5vh;
