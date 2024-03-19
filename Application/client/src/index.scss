@@ -239,18 +239,14 @@ button.active {
 }
 
 .about-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;  
   overflow: auto;
   height: auto;
   gap: 20px;
   height: 100vh;
-  margin: 5vh;
 
   .about-section {
     border: 2px solid $border-color;
-    padding: 20px;
   
     background: $secondary-color-dark;
 
