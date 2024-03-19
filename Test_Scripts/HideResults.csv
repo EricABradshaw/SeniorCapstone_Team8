@@ -1,0 +1,4 @@
+"TestCase","Expected_Result","Actual_Result","Test_Result"
+"Good Request","200","200","pass"
+"Empty Cover","400","200","fail"
+"Empty Secret","400","200","fail"
