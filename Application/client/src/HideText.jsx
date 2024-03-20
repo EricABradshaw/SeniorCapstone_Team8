@@ -5,7 +5,7 @@ import SliderControl from './SliderControl';
 import axios from 'axios'
 import {Button} from 'react-bootstrap'
 
-const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
+const serverURL = process.env.REACT_APP_NODE_SERVER_URI || '';
 
 const HideText = () => {
   const coverImageRef = useRef(null)

@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap'
 
-const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
+const serverURL = process.env.REACT_APP_NODE_SERVER_URI || '';
 
 const Extract = () => {
   const [stegoImage, setStegoImage] = useState(null);
