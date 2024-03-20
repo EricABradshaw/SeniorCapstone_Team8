@@ -10,8 +10,7 @@ const mainController = {
       res.setHeader("Access-Control-Max-Age", "1800");
       res.setHeader("Access-Control-Allow-Headers", "content-type");
       res.setHeader("Access-Control-Allow-Methods", "PUT, POST, GET, HEAD, DELETE, PATCH, OPTIONS" ); 
-      res.sendFile(path.join(__dirname, `${frontEndPath}/build/index.html`))
-      // ^^^ res.sendFile('/home/shutt_austin/SeniorCapstone_Team8/Application/client/build/index.html');
+      res.sendFile(`${frontEndPath}/build/index.html`)
     } catch (err) {}
   }
 }
