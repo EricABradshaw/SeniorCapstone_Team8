@@ -7,102 +7,118 @@ $bigB64 = Get-Content .\bigb64.txt
 $smallB64 = Get-Content .\smallb64.txt
 $Script:output = @()
 
-function test{
+function test {
   param(
     $caseName,
     $inputBody,
     $expectedResult
   )
 
-  $res = Invoke-WebRequest "$($nodeBase)/api/hide" -Method 'Post' -Body $body -ContentType "application/json" -Verbose
+  try {
+    $res = Invoke-WebRequest "$($nodeBase)/api/hide" -Method 'Post' -Body $inputBody -ContentType "application/json" -ErrorAction Stop -Verbose
 
-  $status = $res.StatusCode
-  $serverMessage = ""
-  if($null -eq $status){
-    $status = "no response"
-  }
-  elseif ($status -eq 400) {
-    $serverMessage = $res.data.error
-  }
+    $status = $res.StatusCode
+    $serverMessage = ""
+    if ($null -eq $status) {
+      $status = "no response"
+    }
+    elseif ($status -eq 400) {
+      $serverMessage = $res.data.error
+    }
 
+    $result = "fail"
+    if ($res.StatusCode -eq $expectedResult) {
+      $result = "pass"
+    }
 
-  $result = "fail"
-  if($res.StatusCode -eq $expectedResult){
-    $result = "pass"
-  }
+    $responseContent = $res.Content | ConvertFrom-Json
 
-  $responseContent = $res.Content | ConvertFrom-Json
+    $stegoImageExists = "no"
+    if ($responseContent -is [System.Management.Automation.PSCustomObject]) {
+      if ($responseContent.PSObject.Properties.Name -contains "stegoImage") {
+        $stegoImageExists = "yes"
+      }
+    }
 
-  $stegoImageExists = "no"
-  if ($responseContent -is [System.Management.Automation.PSCustomObject]) {
-    if($responseContent.PSObject.Properties.Name -contains "stegoImage"){
-      $stegoImageExists = "yes"
+    $Script:output += [PSCustomObject]@{
+      TestCase        = $caseName
+      Expected_Result = $expectedResult
+      Actual_Result   = $status
+      Recieved_Stego  = $stegoImageExists
+      Test_Result     = $result
+      Server_Message  = $serverMessage
     }
   }
-
-  $Script:output += [PSCustomObject]@{
-    TestCase = $caseName
-    Expected_Result = $expectedResult
-    Actual_Result = $status
-    Recieved_Stego = $stegoImageExists
-    Test_Result = $result
-    Server_Message = $serverMessage
+  catch {
+    $result = "fail"
+    if($expectedResult -eq 400){
+      $result = "pass"
+    }
+    $errorMessage = $_.Exception.Message
+    $Script:output += [PSCustomObject]@{
+      TestCase        = $caseName
+      Expected_Result = $expectedResult
+      Actual_Result   = 400
+      Recieved_Stego  = "no"
+      Test_Result     = $result
+      Server_Message  = $errorMessage
+    }
   }
-
 }
 
 
-# Case 1 - Good Request
+
+# Case - Good Request
 $body = @{
-  coverImageData = $goodB64_1
+  coverImageData  = $goodB64_1
   secretImageData = $goodB64_2
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Good Request" $body 200
 
-# Case 2 - Empty Cover
+# Case - Empty Cover
 $body = @{
-  coverImageData = ""
+  coverImageData  = ""
   secretImageData = $goodB64_2
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Empty Cover" $body 400
 
-# Case 3 - Empty Secret
+# Case - Empty Secret
 $body = @{
-  coverImageData = $goodB64_1
+  coverImageData  = $goodB64_1
   secretImageData = ""
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Empty Secret" $body 400
 
 #Case - Empty Secret and cover
 $body = @{
-  coverImageData = ""
+  coverImageData  = ""
   secretImageData = ""
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Empty Secret and Cover" $body 400
 
-#Case 4 - Invalid Slider
+#Case - Invalid Slider
 $body = @{
-  coverImageData = $goodB64_1
+  coverImageData  = $goodB64_1
   secretImageData = $goodB64_2
-  sliderValue = -1
+  sliderValue     = -1
 } | ConvertTo-Json
 test "Invalid Slider" $body 400
 
-# Case 5 - Missing Cover
+# Case - Missing Cover
 $body = @{
   secretImageData = $goodB64_2
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Missing Cover" $body 400
 
-# Case 6 - Missing Secret
+# Case - Missing Secret
 $body = @{
   coverImageData = $goodB64_1
-  sliderValue = 90
+  sliderValue    = 90
 } | ConvertTo-Json
 test "Missing Secret" $body 400
 
@@ -112,58 +128,58 @@ $body = @{
 } | ConvertTo-Json
 test "Missing Secret and Cover" $body 400
 
-# Case 7 - Missing Slider
+# Case - Missing Slider
 $body = @{
-  coverImageData = $goodB64_1
+  coverImageData  = $goodB64_1
   secretImageData = $goodB64_2
 } | ConvertTo-Json
 test "Missing Slider" $body 200
 
-# Case 8 - Large Cover
+# Case - Large Cover
 $body = @{
-  coverImageData = $bigB64
+  coverImageData  = $bigB64
   secretImageData = $goodB64_2
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Large Cover" $body 200
 
-# Case 9 - Large Secret
+# Case - Large Secret
 $body = @{
-  coverImageData = $goodB64_1
+  coverImageData  = $goodB64_1
   secretImageData = $bigB64
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Large Secret" $body 400
 
-# Case 10 - Large Secret and Cover
+# Case - Large Secret and Cover
 $body = @{
-  coverImageData = $bigB64
+  coverImageData  = $bigB64
   secretImageData = $bigB64
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Large Secret and Cover" $body 400
 
-# Case 11 - Small Secret
+# Case - Small Secret
 $body = @{
-  coverImageData = $goodB64_1
+  coverImageData  = $goodB64_1
   secretImageData = $smallB64
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Small Secret" $body 400
 
-# Case 12 - Small Cover
+# Case - Small Cover
 $body = @{
-  coverImageData = $smallB64
+  coverImageData  = $smallB64
   secretImageData = $goodB64_2
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Small Cover" $body 400
 
-# Case 13 - Small Secret and Cover
+# Case - Small Secret and Cover
 $body = @{
-  coverImageData = $smallB64
+  coverImageData  = $smallB64
   secretImageData = $smallB64
-  sliderValue = 90
+  sliderValue     = 90
 } | ConvertTo-Json
 test "Small Secret and Cover" $body 400
 

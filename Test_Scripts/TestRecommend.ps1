@@ -6,46 +6,62 @@ $bigB64 = Get-Content .\bigb64.txt
 $smallB64 = Get-Content .\smallb64.txt
 $Script:output = @()
 
-function test{
+function test {
   param(
     $caseName,
     $inputBody,
     $expectedResult
   )
+  try{
+    $res = Invoke-WebRequest "$($nodeBase)/api/recommendation" -Method 'Post' -Body $body -ContentType "application/json" -Verbose
 
-  $res = Invoke-WebRequest "$($nodeBase)/api/recommendation" -Method 'Post' -Body $body -ContentType "application/json" -Verbose
-
-  $status = $res.StatusCode
-  $serverMessage = ""
-  if($null -eq $status){
-    $status = "no response"
-  }
-  elseif ($status -eq 400) {
-    $serverMessage = $res.data.error
-  }
+    $status = $res.StatusCode
+    $serverMessage = ""
+    if ($null -eq $status) {
+      $status = "no response"
+    }
+    elseif ($status -eq 400) {
+      $serverMessage = $res.data.error
+    }
 
 
-  $result = "fail"
-  if($res.StatusCode -eq $expectedResult){
-    $result = "pass"
-  }
+    $result = "fail"
+    if ($res.StatusCode -eq $expectedResult) {
+      $result = "pass"
+    }
 
-  $responseContent = $res.Content | ConvertFrom-Json
+    $responseContent = $res.Content | ConvertFrom-Json
 
-  $stegoImageExists = "no"
-  if ($responseContent -is [System.Management.Automation.PSCustomObject]) {
-    if($responseContent.PSObject.Properties.Name -contains "stegoImage"){
-      $stegoImageExists = "yes"
+    $stegoImageExists = "no"
+    if ($responseContent -is [System.Management.Automation.PSCustomObject]) {
+      if ($responseContent.PSObject.Properties.Name -contains "stegoImage") {
+        $stegoImageExists = "yes"
+      }
+    }
+
+    $Script:output += [PSCustomObject]@{
+      TestCase        = $caseName
+      Expected_Result = $expectedResult
+      Actual_Result   = $status
+      Recieved_Stego  = $stegoImageExists
+      Test_Result     = $result
+      Server_Message  = $serverMessage
     }
   }
-
-  $Script:output += [PSCustomObject]@{
-    TestCase = $caseName
-    Expected_Result = $expectedResult
-    Actual_Result = $status
-    Recieved_Stego = $stegoImageExists
-    Test_Result = $result
-    Server_Message = $serverMessage
+  catch{
+    $result = "fail"
+    if($expectedResult -eq 400){
+      $result = "pass"
+    }
+    $errorMessage = $_.Exception.Message
+    $Script:output += [PSCustomObject]@{
+      TestCase        = $caseName
+      Expected_Result = $expectedResult
+      Actual_Result   = 400
+      Recieved_Stego  = "no"
+      Test_Result     = $result
+      Server_Message  = $errorMessage
+    }
   }
 
 }
