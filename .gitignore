@@ -52,4 +52,5 @@ Application/python/metricOutput.csv
 Application/python/metricOutput2.csv
 
 # Test Results
-Test_Scripts/HideResults.csv
+Test_Scripts/*.csv
+Test_Scripts/StressResults.txt

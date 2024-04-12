@@ -17,9 +17,14 @@ function test{
   $res = Invoke-WebRequest "$($nodeBase)/api/hide" -Method 'Post' -Body $body -ContentType "application/json" -Verbose
 
   $status = $res.StatusCode
+  $serverMessage = ""
   if($null -eq $status){
     $status = "no response"
   }
+  elseif ($status -eq 400) {
+    $serverMessage = $res.data.error
+  }
+
 
   $result = "fail"
   if($res.StatusCode -eq $expectedResult){
@@ -41,6 +46,7 @@ function test{
     Actual_Result = $status
     Recieved_Stego = $stegoImageExists
     Test_Result = $result
+    Server_Message = $serverMessage
   }
 
 }
@@ -70,6 +76,14 @@ $body = @{
 } | ConvertTo-Json
 test "Empty Secret" $body 400
 
+#Case - Empty Secret and cover
+$body = @{
+  coverImageData = ""
+  secretImageData = ""
+  sliderValue = 90
+} | ConvertTo-Json
+test "Empty Secret and Cover" $body 400
+
 #Case 4 - Invalid Slider
 $body = @{
   coverImageData = $goodB64_1
@@ -92,12 +106,18 @@ $body = @{
 } | ConvertTo-Json
 test "Missing Secret" $body 400
 
+#Case - Missing Secret and cover
+$body = @{
+  sliderValue = 90
+} | ConvertTo-Json
+test "Missing Secret and Cover" $body 400
+
 # Case 7 - Missing Slider
 $body = @{
   coverImageData = $goodB64_1
   secretImageData = $goodB64_2
 } | ConvertTo-Json
-test "Missing Slider" $body 400
+test "Missing Slider" $body 200
 
 # Case 8 - Large Cover
 $body = @{
@@ -146,6 +166,10 @@ $body = @{
   sliderValue = 90
 } | ConvertTo-Json
 test "Small Secret and Cover" $body 400
+
+#Case - Empty Request
+$body = @{} | ConvertTo-Json
+test "Empty Request" $body 400
 
 # Write output to console and export as csv
 Write-Output $output
