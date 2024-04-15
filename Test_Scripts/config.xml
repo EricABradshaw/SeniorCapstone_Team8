@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Settings>
+  <Setting Name="nodeurl" Value="http://localhost:9000"/>
+  <Setting Name="flaskurl" Value="http://localhost:5000"/>
+  <Setting Name="stressNum" Value ="50000" />
+</Settings>
