@@ -9,11 +9,14 @@ const sendRequestsController = {
     try {
       const coverImageSource = req.body.coverImageData
       const secretImageSource = req.body.secretImageData
-
-      const modelType = req.body.sliderValue
-      let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
-      let stego64String = await helperFunctions.sendToFlask(base64Strings, modelType)
-      res.status(200).json({ stegoImage: stego64String })
+      if (coverImageSource && secretImageSource) {
+        const modelType = req.body.sliderValue
+        let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
+        let stego64String = await helperFunctions.sendToFlask(base64Strings, modelType)
+        res.status(200).json({ stegoImage: stego64String })
+      } else {
+        res.status(400).json({error: "Secret and Cover images are both required!"})
+      }
     } catch (err) {
       console.log(err)
     }

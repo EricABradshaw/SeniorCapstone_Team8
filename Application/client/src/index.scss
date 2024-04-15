@@ -239,12 +239,8 @@ button.active {
 }
 
 .about-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;  
   gap: 20px;
-  height: 100vh;
-  margin: 5vh;
+  height: fit-content;
 
   .about-section {
     border: 2px solid $border-color;

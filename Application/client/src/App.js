@@ -35,7 +35,7 @@ function App() {
   }
 
   return (
-    <div className="App bg-dark container-fluid p-0" style={{height:'100%', minHeight:'100vh', overflow:'hidden'}}>
+    <div className="App bg-dark container-fluid p-0" style={{height:'100%', minHeight:'100vh', overflow:'scroll'}}>
       <div className='mx-auto p-2 row w-100 custom-bg-darker border-bottom'> 
         <h1 className='w-25 py-3 px-5 custom-text'>StegoSource.net</h1>
         <Dropdown className="col-12 d-block d-sm-none">

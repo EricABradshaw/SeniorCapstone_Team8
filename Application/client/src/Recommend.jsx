@@ -9,7 +9,7 @@ import threeStars from './img/3Stars.png';
 import fourStars from './img/4Stars.png';
 import fiveStars from './img/5Stars.png';
 
-const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
+const serverURL = process.env.REACT_APP_NODE_SERVER_URI || '';
 const NUMBER_OF_RECOMMENDATIONS = 20;
 
 const Recommend = () => {

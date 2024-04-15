@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import {Button} from 'react-bootstrap'
 
-const serverURL = process.env.REACT_APP_NODE_SERVER_URI;
+const serverURL = process.env.REACT_APP_NODE_SERVER_URI || '';
 
 const Hide = () => {
   const coverImageRef = useRef(null)
@@ -129,6 +129,7 @@ const Hide = () => {
         })
     } else {
       setProcessing(false)
+      alert("Please provide a Secret image and a Cover image!")
     }
   }
 
