@@ -1,18 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 const SliderControl = ({ onSliderChange }) => {
-  const [value, setValue] = useState(50)
-
   const handleSliderChange = (event) => {
     const value = parseInt(event.target.value)
-    setValue(value)
     onSliderChange(value);
   }
 
   return (
     <div className='row d-flex align-center w-100 my-5'>
-            <p className='custom-text-light'>{value}</p>
-
       <h4 className='col-4 justify-content-end d-none d-md-flex custom-text-light'>Better Extracted Image</h4>
       <h4 className='col-12 d-flex d-md-none custom-text'>Beta Value</h4>
       <div className='col-12 col-md-4'>
