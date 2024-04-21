@@ -23,7 +23,7 @@ def get_appropriate_model_path_and_closest_beta(beta: str) -> Optional[Tuple[str
     beta = float(beta)
 
     # Load the appropriate model based on the provided beta value
-    targetBetas = [0.375, 0.75]
+    targetBetas = [0.375, 0.50, 0.75]
     closestBeta = min(targetBetas, key=lambda x: abs(x - beta))
     print(f'CLOSEST BETA IS {closestBeta}')
 
