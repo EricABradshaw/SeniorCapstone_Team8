@@ -15,18 +15,23 @@ from skimage.metrics import mean_squared_error as mse
 from NSteGuz import StegoModel
 from typing import Tuple, Optional, Union
 
+import os
+import glob
+from typing import Optional, Tuple
+
 def get_appropriate_model_path_and_closest_beta(beta: str) -> Optional[Tuple[str, float]]:
     beta = float(beta)
 
     # Load the appropriate model based on the provided beta value
-    targetBetas = [0.25, 0.50, 0.75]
+    targetBetas = [0.375, 0.50, 0.75]
     closestBeta = min(targetBetas, key=lambda x: abs(x - beta))
     print(f'CLOSEST BETA IS {closestBeta}')
 
     # Navigate to /Application/models/ and prepare the model with the appropriate beta value
     cwd = os.path.dirname(os.path.abspath(__file__))
     modelsDir = os.path.join(os.path.dirname(cwd), 'models')
-    betaFolderName = f"b{closestBeta:.2f}"
+    betaFolderName = f"b{closestBeta:.3f}"  # Use 3 decimal places to avoid rounding if necessary
+    betaFolderName = betaFolderName.rstrip('0').rstrip('.') if '.' in betaFolderName else betaFolderName  # Remove trailing zeros and dot if no decimal part
     print(f'Attempting to load model with {betaFolderName}')
     
     modelFolder = glob.glob(os.path.join(modelsDir, betaFolderName + "*"))
@@ -35,6 +40,7 @@ def get_appropriate_model_path_and_closest_beta(beta: str) -> Optional[Tuple[str
     inputModelPath = modelFolder[0]
     
     return inputModelPath, closestBeta
+
 
 
 def get_psnr(stegoImage: np.ndarray, coverImage: np.ndarray) -> float:
