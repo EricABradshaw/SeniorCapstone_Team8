@@ -129,6 +129,7 @@ const Hide = () => {
         })
     } else {
       setProcessing(false)
+      alert("Please provide a Secret image and a Cover image!")
     }
   }
 
