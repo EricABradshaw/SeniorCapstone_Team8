@@ -100,8 +100,18 @@ def create_stego_image():
     # Load the model
     try:
         print(f'Attempting to load model from {modelFolder}')
-        model = StegoModel()
-        model.load_weights(modelFolder)
+        
+        model = None
+        
+        if beta >= 0.65:
+            model = model_75
+        elif beta >= 0.45:
+            model = model_50
+        else:
+            model = model_375
+        
+        #model = StegoModel()
+        #model.load_weights(modelFolder)
         
         # Preprocess the images 
         coverImagePreproc = preprocess_image(coverImage).astype(np.float32)
@@ -136,8 +146,28 @@ def create_stego_image():
                         }), 200
     except Exception as e:
         return jsonify({"error": "Model could not be loaded . Details: " + str(e)}), 500
-      
+    
+model_375 = None
+model_50 = None
+model_75 = None
+    
 if __name__ == '__main__':
     PORT = 5000
+    
+    beta = 0.75
+    modelFolder, closestBeta = get_appropriate_model_path_and_closest_beta(beta)
+    model_75 = StegoModel()
+    model_75.load_weights(modelFolder)
+    
+    beta = 0.375
+    modelFolder, closestBeta = get_appropriate_model_path_and_closest_beta(beta)
+    model_375 = StegoModel()
+    model_375.load_weights(modelFolder)
+    
+    beta = 0.50
+    modelFolder, closestBeta = get_appropriate_model_path_and_closest_beta(beta)
+    model_50 = StegoModel()
+    model_50.load_weights(modelFolder)
+    
     print(f"Flask server running on port {PORT}")
     app.run(debug=Debug,port=PORT)
