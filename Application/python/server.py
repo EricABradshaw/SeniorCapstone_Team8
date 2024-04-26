@@ -32,17 +32,27 @@ def extract_hidden_image():
         return jsonify({"error": "Invalid beta value. Details: " + str(e)}), 400
     print(f'BETA IS {beta}')
 
-    modelFolder, _ = get_appropriate_model_path_and_closest_beta(beta)
+    modelFolder, beta = get_appropriate_model_path_and_closest_beta(beta)
     
     # Load the model
     try:
         print(f'Attempting to load model from {modelFolder}')
-        model = StegoModel()
         
-        if modelFolder is None:
-             raise FileNotFoundError('Unable to find Stego model. Folder does not exist.')
+        model = None
         
-        model.load_weights(modelFolder)
+        if beta >= 0.65:
+            model = model_75
+        elif beta >= 0.45:
+            model = model_50
+        else:
+            model = model_375
+        
+        #model = StegoModel()
+        
+        #if modelFolder is None:
+        #     raise FileNotFoundError('Unable to find Stego model. Folder does not exist.')
+        
+        #model.load_weights(modelFolder)
         
         # Extract the secret image
         extractedImage = model.extract((stegoImage))
