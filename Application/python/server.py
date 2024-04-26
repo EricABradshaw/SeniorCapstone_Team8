@@ -121,7 +121,8 @@ def create_stego_image():
         stegoImage = model.hide((
             np.expand_dims(secretImagePreproc, axis=0),
             np.expand_dims(coverImagePreproc, axis=0)
-        ))     
+        ))
+        print(9)
         # Clean up the image so it's a proper PNG in RGB format
         stegoImage = stegoImage.numpy().squeeze()
         stegoImage = np.clip(stegoImage, 0, 1)
@@ -135,8 +136,10 @@ def create_stego_image():
         stegoImageByteArray = stegoImageByteArray.getvalue()
         # Now convert to base64
         stegoImageBase64 = base64.b64encode(stegoImageByteArray).decode('utf-8')
+        print(10)
         # Get metrics
         ssim, psnr = get_metrics(coverImage, secretImage, stegoImage, model)
+        print(11)
         # Return the stego image
         return jsonify({
                         "message":"Success",
