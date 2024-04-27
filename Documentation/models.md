@@ -28,15 +28,7 @@ There are currently three pre-trained models:
 A model chossen closest to the current beta value is done within the `serverUtils.py` program with the `./python` folder.
 
 **serverUtils.py:**
-
-```javascript
-from NSteGuz import StegoModel
-from typing import Tuple, Optional, Union
-
-import os
-import glob
-from typing import Optional, Tuple
-
+```python
 def get_appropriate_model_path_and_closest_beta(beta: str) -> Optional[Tuple[str, float]]:
     beta = float(beta)
 
@@ -53,6 +45,9 @@ def get_appropriate_model_path_and_closest_beta(beta: str) -> Optional[Tuple[str
     print(f'Attempting to load model with {betaFolderName}')
 
     modelFolder = glob.glob(os.path.join(modelsDir, betaFolderName + "*"))
+    if not modelFolder:
+        return None
+    inputModelPath = modelFolder[0]
 
     return inputModelPath, closestBeta
 ```
