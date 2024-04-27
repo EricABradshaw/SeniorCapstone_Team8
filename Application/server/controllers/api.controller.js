@@ -1,10 +1,7 @@
 /* Communicate with Flask server */
 const axios = require('axios')
 const sharp = require('sharp') // image processing
-const base64Img = require('base64-img')
-const FormData = require('form-data')
 const FLASK_SERVER_URL = 'http://127.0.0.1:5000' // put in env
-const fs = require('fs')
 
 const sendRequestsController = {
   // Sending a post request to Flask server for creating stego 
@@ -12,14 +9,19 @@ const sendRequestsController = {
     try {
       const coverImageSource = req.body.coverImageData
       const secretImageSource = req.body.secretImageData
-      console.log(`Request received from ${req.get('origin')}`)
-      let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
-      let stego64String = await helperFunctions.sendToFlask(base64Strings)
-      res.status(200).json({ stegoImage: stego64String })
+      if (coverImageSource && secretImageSource) {
+        const modelType = req.body.sliderValue
+        let base64Strings = await helperFunctions.fetchAndConvert(coverImageSource, secretImageSource)
+        let stego64String = await helperFunctions.sendToFlask(base64Strings, modelType)
+        res.status(200).json({ stegoImage: stego64String })
+      } else {
+        res.status(400).json({error: "Secret and Cover images are both required!"})
+      }
     } catch (err) {
       console.log(err)
     }
   },
+
   extractSend: async (base64) => {
     try {
       const response = await axios.post(FLASK_SERVER_URL + '/extract_hidden_image', base64, {
@@ -31,6 +33,34 @@ const sendRequestsController = {
       return response.data.hiddenImage
     } catch (error) {
       console.log('Error: ' + error)
+    }
+  },
+
+  hideTextSend: async (req, res) => {
+    try {
+      const coverImageSource = req.body.coverImageData
+      const secretBase64 = req.body.textDataUrl
+      let strings = await helperFunctions.fetchAndConvertOne(coverImageSource)
+      strings.secretString = secretBase64
+      const modelType = req.body.sliderValue
+      let stego64String = await helperFunctions.sendToFlask(strings, modelType)
+      res.status(200).json({ stegoImage: stego64String})
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
+  recommendation: async (req, res) => {
+    try {
+      const secretBase64 = req.body.secretImage
+      const sliderValue = req.body.sliderValue
+
+      let strings = await helperFunctions.fetchAndConvert('https://picsum.photos/224/224', secretBase64)
+      let stego64String = await helperFunctions.sendToFlask(strings, sliderValue)
+
+      res.status(200).json({ stegoImage: stego64String })
+    } catch (error) {
+      console.log(error)
     }
   }
 }
@@ -47,17 +77,26 @@ const helperFunctions = {
       const axiosResponseSecret = await axios.get(secretImageUrl, {responseType: 'arraybuffer'})
       pngStrings.coverString = await (await sharp(axiosResponseCover.data).toFormat('png').toBuffer()).toString('base64')
       pngStrings.secretString = await (await sharp(axiosResponseSecret.data).toFormat('png').toBuffer()).toString('base64')
-      console.log(pngStrings.coverString.slice(85, 105))
-      console.log(pngStrings.secretString.slice(85, 105))
     } catch (error) {
       console.error('Error:', error)
     }
     return pngStrings
   },
-  // Sends the object containing two png buffers to Flask server
-  sendToFlask: async (data) => {
+  fetchAndConvertOne: async (imageUrl) => {
+    let pngStrings = {}
     try {
-      let resData
+      const axiosResponseCover = await axios.get(imageUrl, {responseType: 'arraybuffer'})
+      pngStrings.coverString = await (await sharp(axiosResponseCover.data).toFormat('png').toBuffer()).toString('base64')
+    } catch (error) {
+      console.error('Error:', error)
+    }
+    return pngStrings
+  },
+  // Sends the object containing two png buffers to Flask server and the slider value as 'model'
+  sendToFlask: async (data, model) => {
+    try {
+      data.beta = model;
+      let imageData
       await axios.post(FLASK_SERVER_URL + '/create_stego_image_b64', data, {
         headers: {
           'Content-Type': 'application/json'
@@ -65,68 +104,28 @@ const helperFunctions = {
       })
         .then(async response => {
           console.log('Success:',response.status)
-          resData = await response.data.stegoImage
+          returnedData = await response.data
+          imageData = returnedData.stegoImage
+          ssim = returnedData.ssim
+          psnr = returnedData.psnr
+          console.log(`${returnedData.ssim} ${returnedData.psnr}`)
+          resData = {
+            "imageData": imageData,
+            "ssim": ssim,
+            "psnr": psnr
+          }
         })
-
         return resData
 
     } catch (err) {
       console.error(err)
     }
-
   }
-
 }
 
-// TODO : Create controller for user model
-const userController = {
-  // create stego image (call flask server /create_stego_image)
-  // createStegoImage: async (req, res) => {
-  //   try {
-  //     const formData = new FormData()
 
-  //     // prepare data for sending to flask server
-  //     formData.append('coverImage', req.files.coverImage[0].buffer, {
-  //       filename: 'coverImage.png',
-  //       contentType: 'image/png',
-  //     })
-  //     formData.append('secretImage', req.files.secretImage[0].buffer, {
-  //       filename: 'secretImage.png',
-  //       contentType: 'image/png',
-  //     })
-  //     formData.append('index', req.body.index)
-
-  //     // make request to flask server
-  //     const flaskResponse = await axios.post(`${FLASK_SERVER_URL}/create_stego_image`, formData, {
-  //       headers: {
-  //         ...formData.getHeaders(),
-  //       },
-  //       responseType: 'arraybuffer',
-  //     })
-
-  //     // send response back to front-end
-  //     res.set('Content-Type', 'image/png')
-  //     res.send(flaskResponse.data)
-  //   }
-  //   catch (error) {
-  //     console.error('Error calling Flask server:', error)
-  //     res.status(500).send('Internal Server Error')
-  //   }
-
-
-  // },
-
-  // TODO: extract hidden image
-
-
-  // TODO: get image metrics
-
-
-
-}
 
 module.exports = {
   sendRequestsController,
-  userController,
   helperFunctions
 }

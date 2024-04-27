@@ -1,0 +1,77 @@
+$footprints: #555960;
+$storm: #6f727b;
+$tusk: #c4bfc0;
+$black: #000;
+$gold: #cfb991;
+$summit: #daaa00;
+$clay: #8e6f3e;
+$fog: #9d9795;
+
+.custom-text-light {
+    color: $gold !important;
+}
+
+.custom-text {
+    color: $summit !important;
+}
+
+.custom-text-clay {
+    color: $clay !important;
+}
+
+.custom-text-fog {
+    color: $fog !important;
+}
+
+.custom-bg-dark {
+    background-color: $footprints !important;
+}
+
+.custom-bg-darker {
+    background-color: $black !important;
+}
+
+.custom-bg-gold {
+    background-color: $gold !important;
+}
+
+.custom-bg-fog {
+    background-color: $fog !important;
+}
+
+.custom-button {
+    background-color: $storm !important;
+    border: 2px solid $fog !important;
+}
+
+.custom-button:hover {
+    background-color: $footprints !important;
+}
+
+.custom-button.active {
+    background: $footprints !important;
+    color: $summit !important;
+}
+
+.hover-hide {
+    transition: opacity 0.1s ease;
+    position: absolute;
+    right: 1px;
+    width: auto;
+    height: auto;
+    opacity: 0.8;
+}
+.hover-hide:hover {
+    opacity: 0;
+}
+
+#about * {
+    color: $black !important;
+}
+#about {
+    .about-section {
+        outline: 4px solid white;
+        border: 1px solid $footprints;
+        background-color: $fog !important;
+    }
+}

@@ -16,6 +16,8 @@ const upload = multer({ storage: storage });
 // /api/hide POST: receive images from body, convert to png, send png to Flask server
 router.post('/hide', controller.sendRequestsController.hideSend)
 
+router.post('/hideText', controller.sendRequestsController.hideTextSend)
+
 // /api/extract POST: receive image from body, if not png, convert to png, send png to Flask server
 router.post('/extract', upload.single('stegoImage'), async (req, res) => {
   // Access the uploaded file using req.file.buffer
@@ -28,6 +30,9 @@ router.post('/extract', upload.single('stegoImage'), async (req, res) => {
 
   // Send a response
   res.json({ stegoImageData: answer });
-});
+})
+
+// URI: /api/recommendation
+router.post('/recommendation', controller.sendRequestsController.recommendation)
 
 module.exports = router

@@ -1,41 +1,101 @@
-# SeniorCapstone_Team8
+# StegoSource
 
-Senior Capstone project Team 8 AY 2023-24
+Purdue Fort Wayne Senior Capstone Project AY 2023-24, Team 8
 
-## Python Setup
+Utilizing a CNN-Based Image-in-Image Steganography Model in a Web-Based Application
 
-The models were developed using an older version of TensorFlow; 1.xx compatibility has decreased in later releases and full-blown conversion to 2.xx is not within our scope, so to properly use the models we need a version of Python that is compatible with TensorFlow 2.8.0, the latest of which is Python 3.10.11.
+This project utilizes a CNN-based machine learning model developed by Dr. Amal Khalifa and her team at Purdue University Fort Wayne. 
 
-While not strictly required it's probably best to uninstall any other versions of Python.
+## Dependency Installation
 
-Install [Python 3.10.11](https://www.python.org/downloads/release/python-31011/)
+### Python
 
+The image-in-image steganography models used for this project are CNN models utilizing the SteGuz method. You will need to install a version of Python that supports TensorFlow version 2.12.0.
+
+We have been developing and running this application under Python [Python 3.10.11](https://www.python.org/downloads/release/python-31011/).
+
+*While not strictly required it is best to have only one version of Python installed on your machine.*
+
+While installing Python:
 - Be sure to check the box that says "Add Python 3.x to PATH"
-- After installation, add `%appdata%\Python\Python3x\Scripts` to your PATH.
+- After installation, add `%appdata%\Python\Python3x\Scripts` to PATH (if it's not already there).
 
-## Development Setup Instructions
+### node.js
 
+node.js gives us the package manager `npm` and is also the main back-end for our application. `npm` is also necessary to install the required front-end packages, namely React and its dependencies.
+
+Download and install it from [here](https://nodejs.org/en/download/current).
+
+## Quick Setup
+
+Install the dependencies as described above.
+
+If you are running Bash on a Windows machine:
+```bash
+git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
+cd SeniorCapstone_Team8
+./setup-Win.sh
+cd Application
+npm run all
 ```
+
+If you are running Bash on a Linux machine:
+```bash
+git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
+cd SeniorCapstone_Team8
+./setup-Linux.sh
+cd Application
+npm run all
+```
+
+You should also create a file called `.env` under `/Application` with the following contents:
+```env
+PORT=9000
+FLASK_SERVER_URI="localhost:5000"
+```
+
+And create another a file called `.env` in `/Application/client` with the following contents:
+```env
+REACT_APP_NODE_SERVER_URI="http://localhost:9000"
+```
+
+The server should automatically run in the Python virtual environment. Your terminal does not need to be in the virtual environment when calling `npm run all`.
+
+## Manual Setup
+
+### Clone this repository
+
+In any terminal:
+```bash
 git clone https://github.com/EricABradshaw/SeniorCapstone_Team8.git
 cd SeniorCapstone_Team8/Application/python
+```
+
+### Activate the virtual environment
+
+If you are on Windows using Bash: 
+```bash
 py -3 -m venv .venv
-```
-
-If you are using Bash or an equivalent shell:
-
-```
 . .venv/Scripts/activate
 ```
 
-If you are using command prompt or PowerShell:
-
+If you are on Linux using Bash or equivalent:
+```bash
+python3 -m venv .venv
+source ./.venv/bin/activate
 ```
+
+If you are on Windows using PowerShell or Command Prompt:
+```powershell
+py -3 -m venv .venv
 .venv\Scripts\activate
 ```
+You will know you're in the virtual environment when all commands output by your shell end with `(.venv)`
 
-In VS Code, open the command palette (Ctrl+Shift+P) and type "Python: select interpreter...". Set it to the python.exe found in your .venv folder.
+### Install npm Packages and Python Dependencies
 
-```
+In any terminal with the Python virtual environment active:
+```bash
 pip install -r requirements.txt
 cd ..
 cd client
@@ -45,17 +105,20 @@ npm i -g concurrently
 npm i
 ```
 
-The above setup can be done via the setup shell script from either
-
-- Bash or Bash-like:
-  `source setup.sh`
-- PowerShell:
-  `.\setup.bat`
-
-These scripts will also create a .env file for you in /Application/.
-
-To run the environment:
-
+You will also need to create a file called `.env` in `/Application/` with the following contents:
 ```
+PORT=9000
+FLASK_SERVER_URI="localhost:5000"
+```
+
+And a file called `.env` in `/Application/client` with the following contents:
+```env
+REACT_APP_NODE_SERVER_URI="http://localhost:9000"
+```
+
+### Start the web app locally
+
+Finally, to start the web server on your local machine from the `/Application/` folder:
+```bash
 npm run all
 ```
